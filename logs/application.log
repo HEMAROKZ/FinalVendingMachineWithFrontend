@@ -62,3 +62,6 @@
 2023-12-02 15:46:54.818  INFO 36344 --- [http-nio-8080-exec-2] c.V.V.service.InventoryService           : in addUpdateDenominationCounts METHOD
 2023-12-02 15:46:54.822  INFO 36344 --- [http-nio-8080-exec-2] c.V.V.service.InventoryService           : in addUpdateDenominationCounts METHOD
 2023-12-02 15:46:54.827  INFO 36344 --- [http-nio-8080-exec-2] c.V.V.service.InventoryService           : in addUpdateDenominationCounts METHOD
+2023-12-02 15:53:37.647  INFO 36344 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2023-12-02 15:53:37.653  INFO 36344 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2023-12-02 15:53:37.657  INFO 36344 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
