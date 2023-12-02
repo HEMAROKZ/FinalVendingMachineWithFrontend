@@ -14,6 +14,7 @@
 <body class="bg-light">
 <div class="container mt-5">
     <h1 class="mb-4">Purchase Details</h1>
+                <a href="/home" class="btn btn-outline-warning">Go Back</a>
 
     <!-- Display Total Change -->
     <div class="card mb-4">

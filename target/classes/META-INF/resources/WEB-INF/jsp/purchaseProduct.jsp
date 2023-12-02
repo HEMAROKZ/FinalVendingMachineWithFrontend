@@ -116,6 +116,9 @@
     <fieldset>
         <form action="/purchasemultipleproductpage" method="post">
             <div class="container">
+              <div id="cartMessage" class="alert alert-danger" role="alert" style="display: none;">
+                              Please add products to the cart to purchase items.
+                          </div>
                 <div class="row">
                     <c:forEach var="product" items="${list}" varStatus="status">
                         <div class="col-md-4">
@@ -139,13 +142,52 @@
                     </c:forEach>
                 </div>
             </div>
-            <div class="container text-center">
-                <button type="submit" class="btn btn-primary">Purchase</button>
-                <!-- <a href="/purchaseproductpage" class="btn btn-primary" style="font-size: 20px">Purchase Items</a> -->
-                <a href="/home" class="btn btn-outline-warning">Go Back</a>
-            </div>
-        </form>
-    </fieldset>
+           <div class="container text-center">
+                      <button id="purchaseButton" type="submit" class="btn btn-primary" disabled>Purchase</button>
+                      <a href="/home" class="btn btn-outline-warning">Go Back</a>
+                  </div>
+              </form>
+
+
+
+              <script>
+                  // Function to check if any quantity input has a value greater than zero
+                  function isAnyQuantityGreaterThanZero() {
+                      var quantities = document.getElementsByName('quantities');
+                      for (var i = 0; i < quantities.length; i++) {
+                          if (parseInt(quantities[i].value) > 0) {
+                              return true;
+                          }
+                      }
+                      return false;
+                  }
+
+                  // Function to enable/disable the purchase button and show/hide the message
+                  function updatePurchaseButton() {
+                      var purchaseButton = document.getElementById('purchaseButton');
+                      var cartMessage = document.getElementById('cartMessage');
+
+                      if (isAnyQuantityGreaterThanZero()) {
+                          purchaseButton.disabled = false;
+                          cartMessage.style.display = 'none';
+                      } else {
+                          purchaseButton.disabled = true;
+                          cartMessage.style.display = 'block';
+
+                          // Hide the message after 5 seconds
+                          setTimeout(function () {
+                              cartMessage.style.display = 'none';
+                          }, 5000);
+                      }
+                  }
+
+                  // Attach the update function to the change event of quantity inputs
+                  var quantityInputs = document.getElementsByName('quantities');
+                  for (var i = 0; i < quantityInputs.length; i++) {
+                      quantityInputs[i].addEventListener('change', updatePurchaseButton);
+                  }
+              </script>
+          </fieldset>
 </body>
 
 </html>

@@ -2,6 +2,7 @@ package com.VendingMachine.VendingMachine01.dao;
 
 import com.VendingMachine.VendingMachine01.model.Denomination;
 import com.VendingMachine.VendingMachine01.model.Inventry;
+import com.VendingMachine.VendingMachine01.util.SqlQueries;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -28,7 +29,7 @@ public class DenominationDAOImp implements DenominationDAO {
     public Optional<Denomination> findById(int indexId) {
         SqlParameterSource mapSqlParameterSource = new MapSqlParameterSource("indexId", indexId);
         List<Denomination> result = getNamedParameterJdbcTemplate().query(
-                "SELECT * FROM Denomination WHERE indexId = :indexId",
+                SqlQueries.SELECT_DENOMINATION_BY_ID,
                 mapSqlParameterSource,
                 new BeanPropertyRowMapper<>(Denomination.class)
         );
@@ -37,14 +38,14 @@ public class DenominationDAOImp implements DenominationDAO {
     }
     @Override
     public void update(Denomination denomination) {
-        String sql = "UPDATE Denomination SET " +
-                "fiftyRupee = :fiftyRupee, " +
-                "twentyRupee = :twentyRupee, " +
-                "tenRupee = :tenRupee, " +
-                "fiveRupee = :fiveRupee, " +
-                "twoRupee = :twoRupee, " +
-                "oneRupee = :oneRupee " +
-                "WHERE indexId = :indexId";
+//        String sql = "UPDATE Denomination SET " +
+//                "fiftyRupee = :fiftyRupee, " +
+//                "twentyRupee = :twentyRupee, " +
+//                "tenRupee = :tenRupee, " +
+//                "fiveRupee = :fiveRupee, " +
+//                "twoRupee = :twoRupee, " +
+//                "oneRupee = :oneRupee " +
+//                "WHERE indexId = :indexId";
 
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("indexId", denomination.getIndexId());
@@ -55,7 +56,7 @@ public class DenominationDAOImp implements DenominationDAO {
         parameters.addValue("twoRupee", denomination.getTwoRupee());
         parameters.addValue("oneRupee", denomination.getOneRupee());
 
-        getNamedParameterJdbcTemplate().update(sql, parameters);
+        getNamedParameterJdbcTemplate().update(SqlQueries.UPDATE_DENOMINATION, parameters);
     }
 
 }

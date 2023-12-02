@@ -19,12 +19,9 @@ import java.util.stream.Collectors;
 @Service
 public class InventoryService {
 
-    InventoryDAO repository;
-
-    InitialBalanceDAO initialBalanceDAOImp;
-
-
-    DenominationService denominationService;
+    private final InventoryDAO repository;
+    private final InitialBalanceDAO initialBalanceDAOImp;
+    private final DenominationService denominationService;
 
 
     private static Logger log = LoggerFactory.getLogger(InventoryService.class);
@@ -69,7 +66,7 @@ public class InventoryService {
 
     public Inventry getInventryProductById(int productId) {
         log.info("product id in get product by id == {} ", productId);
-        if (repository.findById(productId).isEmpty()) {
+        if (repository.findById(productId).isEmpty()) {  ///check this  for null pointer exception
             throw new ProductIdNotFoundException("invalid product id given in url ....!!!!");
         } else if (repository.findById(productId).get(0).getProductInventoryCount() < 1) {
             throw new ProductUnavialableException(repository.findById(productId).get(0).getName() + " is Out of Stock..!!");
@@ -85,7 +82,7 @@ public class InventoryService {
 
     /////////////////////////////////////////////////////////
 
-    public VendingMachineOutputDTO purchaseProduct(CustomerInputDTO customerInputDTO) {
+    public VendingMachineOutputDTO purchaseProduct( final CustomerInputDTO customerInputDTO) {
         var productId = customerInputDTO.getProductId();
         var inputPrice = customerInputDTO.getPrice();
         var countOfProduct = customerInputDTO.getCountOfProduct();
@@ -156,7 +153,7 @@ public class InventoryService {
 
 //will retun individualCost for the product that we opt for purchase
 
-    public int productCostCalculation(PurchaseInputDTO purchaseInputDTOList) {
+    public int productCostCalculation(final PurchaseInputDTO purchaseInputDTOList) {
 
         // Iterate over the list of PurchaseInputDTO and calculate individual costs
         int individualCost = purchaseInputDTOList.getPrice() * purchaseInputDTOList.getQuantity();
@@ -164,7 +161,7 @@ public class InventoryService {
         return individualCost;
     }
     ////////////////////////////////////////working on this remember..................
-    public PurchaseResult multiplePurchaseProduct(List<PurchaseInputDTO> purchaseInputDTO, int totalCost, Map<Integer, Integer> inputDenominationMap) {
+    public PurchaseResult multiplePurchaseProduct(final List<PurchaseInputDTO> purchaseInputDTO, int totalCost, Map<Integer, Integer> inputDenominationMap) {
 
         log.info("product id in purchase product == {} ", totalCost);
 
@@ -246,7 +243,7 @@ public class InventoryService {
 
 
     //method to calculate the total price of purchased products from the list
-    private double calculateTotalPrice(List<PurchaseInputDTO> purchaseInputDTO) {
+    private double calculateTotalPrice(final List<PurchaseInputDTO> purchaseInputDTO) {
         double totalPrice = 0;
         for (PurchaseInputDTO inputDTO : purchaseInputDTO) {
             totalPrice += inputDTO.getPrice() * inputDTO.getCountOfProduct();

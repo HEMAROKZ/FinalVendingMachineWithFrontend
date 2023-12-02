@@ -131,6 +131,7 @@
 <body>
     <div class="billing-container">
         <h2>Vending Machine Billing</h2>
+                <a href="/home" class="btn btn-outline-warning">Go Back</a>
 
         <form action="multiplePurchaseOfProductFinal" method="post">
            <table>

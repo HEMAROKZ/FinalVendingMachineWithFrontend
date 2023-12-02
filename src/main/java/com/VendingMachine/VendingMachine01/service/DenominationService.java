@@ -31,37 +31,27 @@ public class DenominationService {
         }
     }
 
+
+    ////must use null check must be handled
     private void updateDenominationCounts(int count, int denomination) {
-        Optional<Denomination> optionalDenomination = denominationRepository.findById(1);
+        var optionalDenomination = denominationRepository.findById(1);
         if (optionalDenomination.isPresent()) {
             Denomination denominationEntity = optionalDenomination.get();
             switch (denomination) {
-                case 50:
-                    denominationEntity.setFiftyRupee(denominationEntity.getFiftyRupee() - count);
-                    break;
-                case 20:
-                    denominationEntity.setTwentyRupee(denominationEntity.getTwentyRupee() - count);
-                    break;
-                case 10:
-                    denominationEntity.setTenRupee(denominationEntity.getTenRupee() - count);
-                    break;
-                case 5:
-                    denominationEntity.setFiveRupee(denominationEntity.getFiveRupee() - count);
-                    break;
-                case 2:
-                    denominationEntity.setTwoRupee(denominationEntity.getTwoRupee() - count);
-                    break;
-                case 1:
-                    denominationEntity.setOneRupee(denominationEntity.getOneRupee() - count);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid denomination: " + denomination);
+                case 50 -> denominationEntity.setFiftyRupee(denominationEntity.getFiftyRupee() - count);
+                case 20 -> denominationEntity.setTwentyRupee(denominationEntity.getTwentyRupee() - count);
+                case 10 -> denominationEntity.setTenRupee(denominationEntity.getTenRupee() - count);
+                case 5 -> denominationEntity.setFiveRupee(denominationEntity.getFiveRupee() - count);
+                case 2 -> denominationEntity.setTwoRupee(denominationEntity.getTwoRupee() - count);
+                case 1 -> denominationEntity.setOneRupee(denominationEntity.getOneRupee() - count);
+                default -> throw new IllegalArgumentException("Invalid denomination: " + denomination);
             }
 
             denominationRepository.update(denominationEntity);
         } else {
             throw new RuntimeException("Denomination not found for index 1");
         }
+
     }
 
     ////////////////////////////////////////////////////////
@@ -108,32 +98,19 @@ public class DenominationService {
     }
 
     private void addUpdateDenominationCounts(int count, int denomination) {
-        Optional<Denomination> optionalDenomination = denominationRepository.findById(1);
+        var optionalDenomination = denominationRepository.findById(1);
         log.info("in addUpdateDenominationCounts METHOD");
 
         if (optionalDenomination.isPresent()) {
             Denomination denominationEntity = optionalDenomination.get();
             switch (denomination) {
-                case 50:
-                    denominationEntity.setFiftyRupee(denominationEntity.getFiftyRupee() + count);
-                    break;
-                case 20:
-                    denominationEntity.setTwentyRupee(denominationEntity.getTwentyRupee() + count);
-                    break;
-                case 10:
-                    denominationEntity.setTenRupee(denominationEntity.getTenRupee() + count);
-                    break;
-                case 5:
-                    denominationEntity.setFiveRupee(denominationEntity.getFiveRupee() + count);
-                    break;
-                case 2:
-                    denominationEntity.setTwoRupee(denominationEntity.getTwoRupee() + count);
-                    break;
-                case 1:
-                    denominationEntity.setOneRupee(denominationEntity.getOneRupee() + count);
-                    break;
-                default:
-                    throw new InsufficientInputCashException("Invalid denomination: " + denomination);
+                case 50 -> denominationEntity.setFiftyRupee(denominationEntity.getFiftyRupee() + count);
+                case 20 -> denominationEntity.setTwentyRupee(denominationEntity.getTwentyRupee() + count);
+                case 10 -> denominationEntity.setTenRupee(denominationEntity.getTenRupee() + count);
+                case 5 -> denominationEntity.setFiveRupee(denominationEntity.getFiveRupee() + count);
+                case 2 -> denominationEntity.setTwoRupee(denominationEntity.getTwoRupee() + count);
+                case 1 -> denominationEntity.setOneRupee(denominationEntity.getOneRupee() + count);
+                default -> throw new InsufficientInputCashException("Invalid denomination: " + denomination);
             }
 
             denominationRepository.update(denominationEntity);
@@ -142,12 +119,6 @@ public class DenominationService {
         }
     }
 
-
-
-    ///////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////
     public Map<Integer, Integer> getCustomDenominationsFromDatabase() {
@@ -177,7 +148,10 @@ public class DenominationService {
 
         // Sort the denominations in descending order
         customDenominations.entrySet().stream()
-                .sorted((entry1, entry2) -> Integer.compare(entry2.getKey(), entry1.getKey()))
+                //before as it is
+              //  .sorted((entry1, entry2) -> Integer.compare(entry2.getKey(), entry1.getKey()))
+
+                .sorted(Map.Entry.<Integer,Integer>comparingByKey().reversed())
                 .forEach(entry -> {
                     int denomination = entry.getKey();
                     int count = Math.min(remainingAmount[0] / denomination, entry.getValue());

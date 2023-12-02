@@ -16,15 +16,14 @@ import java.util.List;
 @RestController
 @Tag(name = "ADMIN PROCESS")
 public class AdminController {
-
+// always must be final
     private AdminServices adminServices;
     private InventoryService inventoryService;
 
-    public AdminController( AdminServices adminServices,InventoryService inventoryService) {
+    public AdminController(  AdminServices adminServices,InventoryService inventoryService) {
         this.adminServices = adminServices;
         this.inventoryService=inventoryService;
     }
-
 
 ////////////////////////////////////////////////////////-------------delete item
 
