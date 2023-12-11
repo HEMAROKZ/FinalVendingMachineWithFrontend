@@ -17,36 +17,39 @@ import java.util.List;
 public class InventoryDAOImp implements InventoryDAO {
 
     @Autowired
-   JdbcTemplate jdbcTemplate;
-    @Autowired
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-   public NamedParameterJdbcTemplate getNamedParameterJdbcTemplate() {
+    @Autowired
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    public InventoryDAOImp(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    }
+
+    public  NamedParameterJdbcTemplate getNamedParameterJdbcTemplate() {
         return namedParameterJdbcTemplate;
     }
 
-
     @Override
-    public List<Inventry> findAll() {
-       // String SQL ="SELECT * FROM productlist";
-        return getNamedParameterJdbcTemplate().query(SqlQueries.SELECT_ALL_PRODUCTS, new BeanPropertyRowMapper<Inventry>(Inventry.class));
+    public  List<Inventry> findAll() {
+        return getNamedParameterJdbcTemplate().query(SqlQueries.SELECT_ALL_PRODUCTS, new BeanPropertyRowMapper<>(Inventry.class));
     }
 
     @Override
-    public List<Inventry> findById(int productId) {
+    public  List<Inventry> findById(final int productId) {
         SqlParameterSource mapSqlParameterSource = new MapSqlParameterSource("productId", productId);
         return getNamedParameterJdbcTemplate().query(SqlQueries.SELECT_PRODUCT_BY_ID, mapSqlParameterSource, new BeanPropertyRowMapper<>(Inventry.class));
     }
-    ///////////////////////////////////////////////////////////
+
     @Override
-    public List<Inventry> findByInventryCount(int productInventoryCount) {
+    public  List<Inventry> findByInventryCount(final int productInventoryCount) {
         SqlParameterSource mapSqlParameterSource = new MapSqlParameterSource("productInventoryCount", productInventoryCount);
-        return getNamedParameterJdbcTemplate().query(SqlQueries.SELECT_PRODUCTS_BY_COUNT, mapSqlParameterSource , new BeanPropertyRowMapper<Inventry>(Inventry.class));
+        return getNamedParameterJdbcTemplate().query(SqlQueries.SELECT_PRODUCTS_BY_COUNT, mapSqlParameterSource , new BeanPropertyRowMapper<>(Inventry.class));
     }
-    //////////////////////////////////////////////////////////
+
     @Override
-    public int  save(InventoryDTO e) {
-      //  String sql = "INSERT INTO productlist (productId,name, productInventoryCount, productPrice) VALUES (:productId,:name, :productInventoryCount, :productPrice)";
+    public  int save(final InventoryDTO e) {
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("productId", e.getProductId());
         paramSource.addValue("name", e.getName());
@@ -61,21 +64,18 @@ public class InventoryDAOImp implements InventoryDAO {
     }
 
     @Override
-    public int updatedStock(int productId, int productInventoryCount) {
+    public  int updatedStock(final int productId, final int productInventoryCount) {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource("productId", productId).addValue("productInventoryCount", productInventoryCount);
         return getNamedParameterJdbcTemplate().update("update productlist set productInventoryCount = :productInventoryCount where productId = :productId", sqlParameterSource);
     }
 
-
-
     @Override
-    public int deleteById(int productId) {
+    public  int deleteById(final int productId) {
         return jdbcTemplate.update(SqlQueries.DELETE_PRODUCT_BY_ID, productId);
     }
 
     @Override
-    public int update(Inventry e) {
-      //  String sql ="update productlist set name= :name, productInventoryCount= :productInventoryCount, productPrice=:productPrice where productId= :productId ";
+    public  int update(final Inventry e) {
         SqlParameterSource paramSource = new MapSqlParameterSource()
                 .addValue("productId", e.getProductId())
                 .addValue("name", e.getName())
@@ -84,5 +84,4 @@ public class InventoryDAOImp implements InventoryDAO {
         System.out.println("here in inventorydtoimp ========================");
         return  namedParameterJdbcTemplate.update(SqlQueries.UPDATE_PRODUCT, paramSource);
     }
-
 }

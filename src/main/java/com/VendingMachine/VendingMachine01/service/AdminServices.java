@@ -13,39 +13,43 @@ import java.util.stream.Collectors;
 @Service
 public class AdminServices {
 
-     private  InventoryDAOImp repository;
+    private final InventoryDAOImp repository;
+    private final InitialBalanceDAOImp initialBalanceDAOImp;
 
-    private  InitialBalanceDAOImp initialBalanceDAOImp;
-
-
-    public AdminServices(InventoryDAOImp repository, InitialBalanceDAOImp initialBalanceDAOImp) {
+    public AdminServices(final InventoryDAOImp repository, final InitialBalanceDAOImp initialBalanceDAOImp) {
         this.repository = repository;
-        this.initialBalanceDAOImp=initialBalanceDAOImp;
+        this.initialBalanceDAOImp = initialBalanceDAOImp;
     }
 
-    public int saveInventory(InventoryDTO inventry){ return repository.save(inventry); }
+    public int saveInventory(final InventoryDTO inventry) {
+        return repository.save(inventry);
+    }
 
-
-    public int updateInventory(Inventry inventry){
+    public int updateInventory(final Inventry inventry) {
         return repository.update(inventry);
     }
-    public int deleteProductById(int productId){
+
+    public int deleteProductById(final int productId) {
         return repository.deleteById(productId);
     }
-/////////////////////////
 
-    public List<InitialBalanceAndPurchaseHistory> getListOfAllPurchaseHistory(){
+    public List<InitialBalanceAndPurchaseHistory> getListOfAllPurchaseHistory() {
         return allProductToPurchaseHistory(initialBalanceDAOImp.getAllPurchaseHistory());
     }
 
-    public List<InitialBalanceAndPurchaseHistory> allProductToPurchaseHistory(List<InitialBalanceAndPurchaseHistory> allInvProduct){
-        return  allInvProduct.stream().map(this::productToUserProductHistory).collect(Collectors.toList());
+    public List<InitialBalanceAndPurchaseHistory> allProductToPurchaseHistory(final List<InitialBalanceAndPurchaseHistory> allInvProduct) {
+        return allInvProduct.stream().map(this::productToUserProductHistory).collect(Collectors.toList());
     }
 
-    public InitialBalanceAndPurchaseHistory productToUserProductHistory(InitialBalanceAndPurchaseHistory inventory){
-        return new InitialBalanceAndPurchaseHistory(inventory.getId(),inventory.getProductId(),inventory.getProduct(),inventory.getProductPrice(),inventory.getCustomerInputAmount(), inventory.getVendingMachineBalance(), inventory.getInitialBalance());
+    public InitialBalanceAndPurchaseHistory productToUserProductHistory(final InitialBalanceAndPurchaseHistory inventory) {
+        return new InitialBalanceAndPurchaseHistory(
+                inventory.getId(),
+                inventory.getProductId(),
+                inventory.getProduct(),
+                inventory.getProductPrice(),
+                inventory.getCustomerInputAmount(),
+                inventory.getVendingMachineBalance(),
+                inventory.getInitialBalance()
+        );
     }
-
-    /////////////////////////
-
 }

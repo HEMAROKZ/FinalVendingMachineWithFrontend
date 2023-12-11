@@ -74,6 +74,12 @@ public class InventoryService {
         return repository.findById(productId).get(0);
     }
 
+    public Inventry getOnlyInventryProductById(int productId) {
+        log.info("product id in get product by id == {} ", productId);
+
+        return repository.findById(productId).get(0);
+    }
+
     ////////////////////////
     public InventoryDTO productToUserProduct(Inventry inventory) {
         return new InventoryDTO(inventory.getProductId(), inventory.getName(), inventory.getProductPrice(), inventory.getProductInventoryCount());
