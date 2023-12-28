@@ -13,7 +13,7 @@ public class VendingMachineControllerAdvice {
 
         VendingMachineException vendingMachineException = new VendingMachineException(
                 productIdNotFoundException.getMessage(),
-                HttpStatus.NOT_FOUND); //suitable httpstatus can be kept
+                HttpStatus.NOT_FOUND); //suitable http status can be kept
         return new ResponseEntity<>(vendingMachineException,HttpStatus.NOT_FOUND);
     }
 
@@ -22,7 +22,7 @@ public class VendingMachineControllerAdvice {
 
         VendingMachineException vendingMachineException = new VendingMachineException(
                 noExactChangeException.getMessage(),
-                HttpStatus.NOT_FOUND); //suitable httpstatus can be kept
+                HttpStatus.NOT_FOUND); //suitable http status can be kept
         return new ResponseEntity<>(vendingMachineException,HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler
@@ -30,7 +30,7 @@ public class VendingMachineControllerAdvice {
 
         VendingMachineException vendingMachineException = new VendingMachineException(
                 productUnavialableException.getMessage(),
-                HttpStatus.NOT_FOUND); //suitable httpstatus can be kept
+                HttpStatus.NOT_FOUND); //suitable http status can be kept
         return new ResponseEntity<>(vendingMachineException,HttpStatus.NOT_FOUND);
     }
 
@@ -49,7 +49,7 @@ public class VendingMachineControllerAdvice {
 
         VendingMachineException vendingMachineException = new VendingMachineException(
                 insufficientInputCashException.getMessage(),
-                //this is server side error so changed to errore from bad request to  http code 500
+                //this is server side error so changed to error from bad request to  http code 500
                 HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(vendingMachineException, HttpStatus.INTERNAL_SERVER_ERROR);
     }

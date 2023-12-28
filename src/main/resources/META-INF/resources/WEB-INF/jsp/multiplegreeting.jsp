@@ -61,6 +61,16 @@
             </div>
         </div>
     </div>
+    <!-- Display a link to download the bill -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Download Bill</h5>
+        </div>
+        <div class="card-body">
+            <a href="/download?fileName=${billFileName}" class="btn btn-primary" download>Download Bill</a>
+        </div>
+    </div>
+
 </div>
 
 <!-- Include Bootstrap JS and Popper.js -->

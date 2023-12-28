@@ -7,7 +7,5 @@ public class InsufficientInitialBalanceException extends RuntimeException {
         super(message);
     }
 
-    public InsufficientInitialBalanceException(String message, Throwable cause) {
-        super(message, cause);
-    }
+
 }

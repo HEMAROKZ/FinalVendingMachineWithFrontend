@@ -1,8 +1,6 @@
 package com.VendingMachine.VendingMachine01.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotNull;
 
@@ -77,25 +75,7 @@ public class PurchaseInputDTO {
 
             private String name;
 
-            public int getProductId() {
-                return productId;
-            }
 
-            public int getCountOfProduct() {
-                return countOfProduct;
-            }
-
-            public int getPrice() {
-                return price;
-            }
-
-            public int getQuantity() {
-                return quantity;
-            }
-
-            public String getName() {
-                return name;
-            }
 
             public PurchaseInputBuilder() {
             }

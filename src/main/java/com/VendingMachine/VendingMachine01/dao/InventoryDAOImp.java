@@ -1,7 +1,10 @@
 package com.VendingMachine.VendingMachine01.dao;
 
 import com.VendingMachine.VendingMachine01.dto.InventoryDTO;
+import com.VendingMachine.VendingMachine01.service.InventoryService;
 import com.VendingMachine.VendingMachine01.util.SqlQueries;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,6 +24,8 @@ public class InventoryDAOImp implements InventoryDAO {
 
     @Autowired
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    private static final Logger log = LoggerFactory.getLogger(InventoryDAOImp.class);
 
     public InventoryDAOImp(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -42,11 +47,7 @@ public class InventoryDAOImp implements InventoryDAO {
         return getNamedParameterJdbcTemplate().query(SqlQueries.SELECT_PRODUCT_BY_ID, mapSqlParameterSource, new BeanPropertyRowMapper<>(Inventry.class));
     }
 
-    @Override
-    public  List<Inventry> findByInventryCount(final int productInventoryCount) {
-        SqlParameterSource mapSqlParameterSource = new MapSqlParameterSource("productInventoryCount", productInventoryCount);
-        return getNamedParameterJdbcTemplate().query(SqlQueries.SELECT_PRODUCTS_BY_COUNT, mapSqlParameterSource , new BeanPropertyRowMapper<>(Inventry.class));
-    }
+
 
     @Override
     public  int save(final InventoryDTO e) {
@@ -58,15 +59,15 @@ public class InventoryDAOImp implements InventoryDAO {
 
         int update = getNamedParameterJdbcTemplate().update(SqlQueries.INSERT_PRODUCT, paramSource);
         if(update == 1) {
-            System.out.println("product is added..");
+            log.info("sucessful update");
         }
         return  update;
     }
 
     @Override
-    public  int updatedStock(final int productId, final int productInventoryCount) {
+    public void updatedStock(final int productId, final int productInventoryCount) {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource("productId", productId).addValue("productInventoryCount", productInventoryCount);
-        return getNamedParameterJdbcTemplate().update("update productlist set productInventoryCount = :productInventoryCount where productId = :productId", sqlParameterSource);
+        getNamedParameterJdbcTemplate().update("update productlist set productInventoryCount = :productInventoryCount where productId = :productId", sqlParameterSource);
     }
 
     @Override

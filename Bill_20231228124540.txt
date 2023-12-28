@@ -1,0 +1,16 @@
+Date and Time: 2023-12-28 12:45:40
+
+Total Change: 10.0 Rupees
+
+Denominations:
+10 Rupees: 1 notes/coins
+
+Details for Each Product:
+Product Name: ThumbsUp
+Product Price: 40 Rupees
+Number Of Quantity Purchased: 1
+
+Product Name: coldcoffee
+Product Price: 20 Rupees
+Number Of Quantity Purchased: 1
+

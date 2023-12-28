@@ -1,6 +1,7 @@
 package com.VendingMachine.VendingMachine01.service;
 
 import com.VendingMachine.VendingMachine01.customeexception.InsufficientInputCashException;
+import com.VendingMachine.VendingMachine01.customeexception.NoExactChangeException;
 import com.VendingMachine.VendingMachine01.dao.DenominationDAO;
 import com.VendingMachine.VendingMachine01.model.Denomination;
 import org.slf4j.Logger;
@@ -16,7 +17,7 @@ import java.util.Optional;
 public class DenominationService {
 
     private final DenominationDAO denominationRepository;
-    private static Logger log = LoggerFactory.getLogger(InventoryService.class);
+    private static final Logger log = LoggerFactory.getLogger(InventoryService.class);
 
     @Autowired
     public DenominationService(DenominationDAO denominationRepository) {
@@ -141,8 +142,8 @@ public class DenominationService {
                 });
 
         if (remainingAmount[0] > 0 && !canFormRemainingAmount(remainingAmount[0], customDenominations)) {
-            System.out.println("No exact change available. Please provide the exact amount.");
-            System.exit(0);
+            log.info("No exact change available. Please provide the exact amount.");
+            throw new NoExactChangeException("No exact change available. Please provide the exact amount.");
         }
 
         return denominationMap;

@@ -7,8 +7,5 @@ public class NoExactChangeException extends RuntimeException{
         super(message);
     }
 
-    public NoExactChangeException(String message, Throwable cause) {
-        super(message, cause);
-    }
 
 }

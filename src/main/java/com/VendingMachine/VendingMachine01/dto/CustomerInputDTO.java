@@ -27,19 +27,11 @@ public class CustomerInputDTO {
 
 
 
-    public CustomerInputDTO(CustomerInputBuilder customerInputBuilder) {
-        this.productId = customerInputBuilder.productId;
-        this.price = customerInputBuilder.price;
-        this.countOfProduct = customerInputBuilder.countOfProduct;
-    }
 
     public int getCountOfProduct() {
         return countOfProduct;
     }
 
-    public static CustomerInputBuilder builder(){
-        return new CustomerInputBuilder();
-    }
 
 
     public int getProductId() {
@@ -49,6 +41,15 @@ public class CustomerInputDTO {
 
     public int getPrice() {
         return price;
+    }
+
+    public CustomerInputDTO(CustomerInputBuilder customerInputBuilder) {
+        this.productId = customerInputBuilder.productId;
+        this.price = customerInputBuilder.price;
+        this.countOfProduct = customerInputBuilder.countOfProduct;
+    }
+    public static CustomerInputBuilder builder(){
+        return new CustomerInputBuilder();
     }
 
 

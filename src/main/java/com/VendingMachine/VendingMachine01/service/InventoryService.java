@@ -14,7 +14,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class InventoryService {
@@ -24,7 +26,7 @@ public class InventoryService {
     private final DenominationService denominationService;
 
 
-    private static Logger log = LoggerFactory.getLogger(InventoryService.class);
+    private static final Logger log = LoggerFactory.getLogger(InventoryService.class);
 
     public InventoryService(InventoryDAO repository, InitialBalanceDAO initialBalanceDAOImp, DenominationService denominationService) {
         this.repository = repository;
@@ -33,7 +35,7 @@ public class InventoryService {
     }
 
 
-    ///////////////////////////////////// here used constructor injection insted of autowired injection
+    ///////////////////////////////////// here used constructor injection instead of autowired injection
 
 
     public List<InventoryDTO> getListOfAllInventory() {
@@ -123,14 +125,15 @@ public class InventoryService {
             Map<Integer, Integer> customDenominations = denominationService.getCustomDenominationsFromDatabase();
             Map<Integer, Integer> denominationMap = denominationService.calculateCustomChangeDenominations(change, customDenominations);
 
-            System.out.println("Change Denominations:");
+            log.info("Change Denominations:");
+
             if (denominationService.isExactChangeAvailable(change, denominationMap)) {
                 for (Map.Entry<Integer, Integer> entry : denominationMap.entrySet()) {
                     int denomination = entry.getKey();
                     int count = entry.getValue();
 
                     if (count > 0) {
-                        System.out.println(denomination + " Rupees: " + count + " notes/coins");
+                        log.info(denomination + " Rupees: " + count + " notes/coins");
                     }
                 }
             } else {
@@ -157,15 +160,9 @@ public class InventoryService {
 //////////////////////////////////////////////////////////
 
 
-//will retun individualCost for the product that we opt for purchase
+//will return individualCost for the product that we opt for purchase
 
-    public int productCostCalculation(final PurchaseInputDTO purchaseInputDTOList) {
 
-        // Iterate over the list of PurchaseInputDTO and calculate individual costs
-        int individualCost = purchaseInputDTOList.getPrice() * purchaseInputDTOList.getQuantity();
-
-        return individualCost;
-    }
     ////////////////////////////////////////working on this remember..................
     public PurchaseResult multiplePurchaseProduct(final List<PurchaseInputDTO> purchaseInputDTO, int totalCost, Map<Integer, Integer> inputDenominationMap) {
 
@@ -255,5 +252,68 @@ public class InventoryService {
             totalPrice += inputDTO.getPrice() * inputDTO.getCountOfProduct();
         }
         return totalPrice;
+    }
+
+public TotalCostResult processPurchaseRequest(List<Integer> productIds,
+                                             List<Integer> quantities,
+                                             List<Integer> prices,
+                                             List<Integer> countsOfProduct,
+                                             List<String> names) {
+    AtomicInteger totalCost = new AtomicInteger();
+
+    List<PurchaseInputDTO> responseList = IntStream.range(0, quantities.size())
+            .filter(i -> {
+                Integer quantity = quantities.get(i);
+                return quantity != null && quantity > 0;
+            })
+            .mapToObj(i -> {
+                int productId = productIds.get(i);
+                int price = prices.get(i);
+                int countOfProduct = countsOfProduct.get(i);
+                String name = names.get(i);
+
+                PurchaseInputDTO purchaseInputDTO = PurchaseInputDTO.builder()
+                        .withProductId(productId)
+                        .withPrice(price)
+                        .withCountOfProduct(countOfProduct)
+                        .withQuantity(quantities.get(i))
+                        .withName(name)
+                        .build();
+
+                int individualCost = productCostCalculation(purchaseInputDTO);
+                totalCost.addAndGet(individualCost);
+                return purchaseInputDTO;
+            })
+            .collect(Collectors.toList());
+
+    return new TotalCostResult(responseList, totalCost.get());
+}
+
+
+    public  List<PurchaseInputDTO> finalPurchaseRequest(List<Integer> productIds,
+                                                          List<Integer> quantities,
+                                                          List<Integer> prices,
+                                                          List<Integer> countsOfProduct,
+                                                          List<String> names) {
+
+        List<PurchaseInputDTO> responseList = IntStream.range(0, productIds.size())
+                .mapToObj(i -> PurchaseInputDTO.builder()
+                        .withProductId(productIds.get(i))
+                        .withPrice(prices.get(i))
+                        .withCountOfProduct(countsOfProduct.get(i))
+                        .withQuantity(quantities.get(i))
+                        .withName(names.get(i))
+                        .build())
+                .collect(Collectors.toList());
+
+
+        return responseList;
+    }
+
+    public int productCostCalculation(final PurchaseInputDTO purchaseInputDTOList) {
+
+        // Iterate over the list of PurchaseInputDTO and calculate individual costs
+
+        return purchaseInputDTOList.getPrice() * purchaseInputDTOList.getQuantity();
     }
 }

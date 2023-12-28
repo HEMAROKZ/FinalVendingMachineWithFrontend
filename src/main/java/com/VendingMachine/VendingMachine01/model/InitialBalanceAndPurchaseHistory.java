@@ -22,8 +22,6 @@ public class InitialBalanceAndPurchaseHistory {
         this.initialBalance = initialBalance;
     }
 
-
-
     public InitialBalanceAndPurchaseHistory() {
     }
 

@@ -7,7 +7,4 @@ public class InsufficientInputCashException extends RuntimeException {
         super(message);
     }
 
-    public InsufficientInputCashException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }

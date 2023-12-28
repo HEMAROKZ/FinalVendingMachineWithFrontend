@@ -1,6 +1,5 @@
 package com.VendingMachine.VendingMachine01.model;
 
-import javax.persistence.Entity;
 
 public class Denomination {
     private int indexId;

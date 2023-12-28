@@ -7,22 +7,17 @@ import java.util.List;
 
 public interface InventoryDAO {
 
-   public List<Inventry> findAll();
+    List<Inventry> findAll();
 
-//   public List<Inventry.InventoryBuilder> findById(int productId);
-   public List<Inventry> findById(int productId);
-   public int deleteById(int productId);
+    List<Inventry> findById(int productId);
+    int deleteById(int productId);
 
-//   public int save(Inventry.InventoryBuilder e);
-   public int save(InventoryDTO e);
+    int save(InventoryDTO e);
 
-//   public int update(Inventry e, int productId);
 
-//   public int update(InventoryDTO e);
+      int update(Inventry e);
 
-     public int update(Inventry e);
+    void updatedStock(int productId, int productInventryCount) ;
 
-   public int updatedStock(int productId, int productInventryCount) ;
-
-   public List<Inventry> findByInventryCount(int productInventryCount);
+//    List<Inventry> findByInventryCount(int productInventryCount);
 }

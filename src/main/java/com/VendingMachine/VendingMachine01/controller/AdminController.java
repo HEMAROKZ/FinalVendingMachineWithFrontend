@@ -6,17 +6,15 @@ import com.VendingMachine.VendingMachine01.service.AdminServices;
 import com.VendingMachine.VendingMachine01.service.InventoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-//import org.springframework.security.access.prepost.PreAuthorize;
-//import org.springframework.security.core.Authentication;
-//import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+
 import java.util.List;
 
 @RestController
@@ -26,6 +24,9 @@ public class AdminController {
     private final AdminServices adminServices;
     private final InventoryService inventoryService;
 
+    private static final Logger log = LoggerFactory.getLogger(InventoryService.class);
+
+
     public AdminController(final AdminServices adminServices, final InventoryService inventoryService) {
         this.adminServices = adminServices;
         this.inventoryService = inventoryService;
@@ -34,14 +35,15 @@ public class AdminController {
     @GetMapping("/login")
     public ModelAndView login() {
         ModelAndView modelAndView = new ModelAndView("login");
-        System.out.println("Inside welcome controller");
+        log.info("Inside welcome controller");
+
         return modelAndView;
     }
 
     @GetMapping("/logout")
     public ModelAndView exit() {
         ModelAndView modelAndView = new ModelAndView("home");
-        System.out.println("Inside welcome controller");
+        log.info("Inside welcome /logout in controller");
         return modelAndView;
     }
     @PreAuthorize("hasRole('USER')")
@@ -53,7 +55,7 @@ public class AdminController {
 
         ModelAndView model = new ModelAndView();
         model.addObject("list", list);
-        model.setViewName("getEmployee");
+        model.setViewName("getInventoryList");
         return model;
     }
 
@@ -61,32 +63,35 @@ public class AdminController {
     @GetMapping("/addinventoryitem")
     public ModelAndView addInventoryItemPage() {
         ModelAndView model = new ModelAndView();
-        model.setViewName("addEmployee");
+        model.setViewName("addProduct");
         return model;
     }
 
-     @PreAuthorize("hasRole('USER')")
-    @RequestMapping(value = "add-Inventryitem", method = RequestMethod.POST)
-    public ModelAndView saveEmployee(final HttpServletRequest request) {
-        final InventoryDTO employee = new InventoryDTO(
-                Integer.parseInt(request.getParameter("productId")),
-                request.getParameter("name"),
-                Integer.parseInt(request.getParameter("productPrice")),
-                Integer.parseInt(request.getParameter("productInventoryCount"))
-        );
-        adminServices.saveInventory(employee);
-        List<InventoryDTO> list = inventoryService.getListOfAllInventory();
+@PreAuthorize("hasRole('USER')")
+@RequestMapping(value = "add-Inventryitem", method = RequestMethod.POST)
+public ModelAndView saveInventory(@RequestParam("productId") int productId,
+                                  @RequestParam("name") String name,
+                                  @RequestParam("productPrice") int productPrice,
+                                  @RequestParam("productInventoryCount") int productInventoryCount){
+        InventoryDTO inventoryDTO=InventoryDTO.builder()
+                .withProductId(productId)
+                .withName(name)
+                .withProductPrice(productPrice)
+                .withProductInventoryCount(productInventoryCount)
+                .build();
+    adminServices.saveInventory(inventoryDTO);
+    List<InventoryDTO> list = inventoryService.getListOfAllInventory();
 
-        ModelAndView model = new ModelAndView();
-        model.addObject("list", list);
-        model.setViewName("getEmployee");
-        return model;
-    }
+    ModelAndView model = new ModelAndView();
+    model.addObject("list", list);
+    model.setViewName("getInventoryList");
+    return model;
+}
 
     @PreAuthorize("hasRole('USER')")
     @RequestMapping(value = "update/user/{productId}", method = RequestMethod.GET)
     public ModelAndView updatePage(@PathVariable("productId") final int productId) {
-        ModelAndView model = new ModelAndView("updateEmployee");
+        ModelAndView model = new ModelAndView("updateProduct");
         model.addObject("productId", productId);
         model.addObject("inventory", inventoryService.getOnlyInventryProductById(productId));
         return model;
@@ -94,29 +99,20 @@ public class AdminController {
 
     @PreAuthorize("hasRole('USER')")
     @RequestMapping(value = "update/user", method = RequestMethod.POST)
-    public ModelAndView updateUser(
-            @RequestParam final int productId,
-            @RequestParam(value = "name", required = true) final String name,
-            @RequestParam(value = "productPrice", required = true) final int productPrice,
-            @RequestParam("productInventoryCount") final int productInventoryCount) {
-        final Inventry userDetail = new Inventry();
-        userDetail.setProductId(productId);
-        userDetail.setName(name);
-        userDetail.setProductPrice(productPrice);
-        userDetail.setProductInventoryCount(productInventoryCount);
-        final int resp = adminServices.updateInventory(userDetail);
+    public ModelAndView updateUser(@ModelAttribute Inventry inventory) {
+        final int resp = adminServices.updateInventory(inventory);
         ModelAndView model = new ModelAndView();
-        model.addObject("productId", productId);
+        model.addObject("productId", inventory.getProductId());
 
         if (resp > 0) {
-            model.addObject("msg", "User with id : " + productId + " updated successfully.");
+            model.addObject("msg", "User with id : " +  inventory.getProductId() + " updated successfully.");
             model.addObject("list", inventoryService.getListOfAllInventory());
-            model.setViewName("getEmployee");
+            model.setViewName("getInventoryList");
             return model;
         } else {
-            model.addObject("msg", "User with id : " + productId + " updation failed.");
-            model.addObject("userDetail", inventoryService.getInventryProductById(productId));
-            model.setViewName("updateEmployee");
+            model.addObject("msg", "User with id : " +  inventory.getProductId() + " updation failed.");
+            model.addObject("userDetail", inventoryService.getInventryProductById( inventory.getProductId()));
+            model.setViewName("updateProduct");
             return model;
         }
     }

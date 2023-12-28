@@ -11,10 +11,13 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Value("${spring.security.user.name}")
-    private String username;
+    private  String username;
 
     @Value("${spring.security.user.password}")
     private String encodedPassword;
+
+    public CustomUserDetailsService() {
+    }
 
     @Override
     public UserDetails loadUserByUsername(String inputUsername) throws UsernameNotFoundException {

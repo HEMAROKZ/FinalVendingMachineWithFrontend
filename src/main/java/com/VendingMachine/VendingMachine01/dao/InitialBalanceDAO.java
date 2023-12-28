@@ -10,8 +10,8 @@ public interface InitialBalanceDAO {
 
     List<InitialBalanceAndPurchaseHistory> getAllPurchaseHistory();
 
-    int saveTransaction(InitialBalanceAndPurchaseHistory initialBalanceAndPurchaseHistory);
+    void saveTransaction(InitialBalanceAndPurchaseHistory initialBalanceAndPurchaseHistory);
 
-    int initialBalanceUpdate (int customerInputAmount);
+    void initialBalanceUpdate (int customerInputAmount);
 
 }

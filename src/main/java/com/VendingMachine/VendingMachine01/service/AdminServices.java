@@ -21,16 +21,16 @@ public class AdminServices {
         this.initialBalanceDAOImp = initialBalanceDAOImp;
     }
 
-    public int saveInventory(final InventoryDTO inventry) {
-        return repository.save(inventry);
+    public void saveInventory(final InventoryDTO inventry) {
+        repository.save(inventry);
     }
 
     public int updateInventory(final Inventry inventry) {
         return repository.update(inventry);
     }
 
-    public int deleteProductById(final int productId) {
-        return repository.deleteById(productId);
+    public void deleteProductById(final int productId) {
+        repository.deleteById(productId);
     }
 
     public List<InitialBalanceAndPurchaseHistory> getListOfAllPurchaseHistory() {

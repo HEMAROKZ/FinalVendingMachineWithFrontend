@@ -1,6 +1,5 @@
 package com.VendingMachine.VendingMachine01.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotNull;
@@ -10,7 +9,6 @@ public class InventoryDTO implements Serializable {
     @NotNull
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private final int productId;
-
     private final String name;
     @NotNull
     private final int productPrice;
@@ -31,6 +29,9 @@ public class InventoryDTO implements Serializable {
         this.productPrice = inventoryDTOBuilder.productPrice;
         this.productInventoryCount = inventoryDTOBuilder.productInventoryCount;
     }
+
+//    public InventoryDTO() {
+//    }
 
     public static InventoryDTOBuilder builder(){
         return new InventoryDTOBuilder();
@@ -63,21 +64,21 @@ public class InventoryDTO implements Serializable {
         public InventoryDTOBuilder() {
         }
 
-        public InventoryDTOBuilder productId(int productId) {
+        public InventoryDTOBuilder withProductId(int productId) {
             this.productId = productId;
             return this;
         }
 
-        public InventoryDTOBuilder name(String name) {
+        public InventoryDTOBuilder withName(String name) {
             this.name = name;
             return this;
         }
 
-        public InventoryDTOBuilder productPrice(int productPrice) {
+        public InventoryDTOBuilder withProductPrice(int productPrice) {
             this.productPrice = productPrice;
             return this;
         }
-        public InventoryDTOBuilder productInventoryCount(int productInventoryCount) {
+        public InventoryDTOBuilder withProductInventoryCount(int productInventoryCount) {
             this.productInventoryCount = productInventoryCount;
             return this;
         }
