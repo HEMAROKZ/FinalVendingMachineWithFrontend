@@ -22,11 +22,10 @@ indexId INT  NOT NULL,
 
 CREATE TABLE purchasehistory_table (
   id INT IDENTITY(1,1) NOT NULL,
-  productId INT NOT NULL,
-  product VARCHAR(45) NOT NULL,
-  productPrice INT NOT NULL,
+  transactionId INT NOT NULL,
+  productId VARCHAR(255) NOT NULL,
   customerInputAmount INT NOT NULL,
+  changeAmount INT NOT NULL,
   vendingMachineBalance INT NOT NULL,
-  initialBalance INT NOT NULL,
   PRIMARY KEY (id)
 );

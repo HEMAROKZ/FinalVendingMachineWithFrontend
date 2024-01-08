@@ -1,6 +1,6 @@
 package com.VendingMachine.VendingMachine01.util;
 
-import com.VendingMachine.VendingMachine01.billGeneration.PurchaseItem;
+import com.VendingMachine.VendingMachine01.customeexception.CustomIOException;
 import com.VendingMachine.VendingMachine01.dto.PurchaseResult;
 
 import java.io.BufferedWriter;
@@ -12,13 +12,6 @@ import java.util.Map;
 
 public class FileUtility {
 
-//    public static void generateBill(String fileName, String content) {
-//        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-//            writer.write(content);
-//        } catch (IOException e) {
-//            e.printStackTrace(); // Handle the exception based on your application's needs
-//        }
-//    }
 public static void generateBill(String relativePath, String fileName, String content) {
     String projectPath = System.getProperty("user.dir");
     String filePath = projectPath + "/" + relativePath + "/" + fileName;
@@ -26,7 +19,7 @@ public static void generateBill(String relativePath, String fileName, String con
     try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
         writer.write(content);
     } catch (IOException e) {
-        e.printStackTrace(); // Handle the exception based on your application's needs
+        throw new CustomIOException("error occurred while downloading the bill-->>"+e);
     }
 }
 

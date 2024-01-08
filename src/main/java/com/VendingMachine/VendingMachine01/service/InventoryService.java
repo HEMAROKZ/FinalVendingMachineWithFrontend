@@ -3,9 +3,11 @@ package com.VendingMachine.VendingMachine01.service;
 import com.VendingMachine.VendingMachine01.customeexception.*;
 import com.VendingMachine.VendingMachine01.dao.*;
 import com.VendingMachine.VendingMachine01.dto.*;
+import com.VendingMachine.VendingMachine01.dto.controllerDTO.DenominationType;
 import com.VendingMachine.VendingMachine01.model.InitialBalanceAndPurchaseHistory;
 
 import com.VendingMachine.VendingMachine01.model.Inventry;
+import com.VendingMachine.VendingMachine01.util.TransactionIdGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -41,7 +43,6 @@ public class InventoryService {
     public List<InventoryDTO> getListOfAllInventory() {
         return allProductToUserInventory(repository.findAll());
     }
-//////////////////////////////////////////////////////
 
 
     ///////////////////////////////////////////////////
@@ -88,162 +89,83 @@ public class InventoryService {
     }
 
 
-    /////////////////////////////////////////////////////////
-
-    public VendingMachineOutputDTO purchaseProduct( final CustomerInputDTO customerInputDTO) {
-        var productId = customerInputDTO.getProductId();
-        var inputPrice = customerInputDTO.getPrice();
-        var countOfProduct = customerInputDTO.getCountOfProduct();
-
-        log.info("product id in purchase product == {} ", productId);
-
-        var productList = repository.findById(productId);
-        if (productList.isEmpty()) {
-            throw new ProductIdNotFoundException("Invalid product id given in URL....!!!!");
-        }
-
-        var inventory = productList.get(0);
-
-        if (countOfProduct <= inventory.getProductInventoryCount()) {
-            if (inputPrice < (inventory.getProductPrice() * countOfProduct)) {
-                throw new InsufficientInputCashException(inputPrice + " rupees is not enough for " + inventory.getName());
-            }
-
-            var change = inputPrice - (inventory.getProductPrice() * countOfProduct);
-
-            if (initialBalanceDAOImp.getChange().getInitialBalance() < change) {
-                throw new InsufficientInitialBalanceException("Sorry No Change!!");
-            }
-
-            log.info("change amount for the purchase == {} ", change);
-
-            var newInitialBalance = initialBalanceDAOImp.getChange().getInitialBalance() - change;
-
-            log.info("new balance in the vending machine == {}", newInitialBalance);
-
-            // Calculate denominations for the change
-            Map<Integer, Integer> customDenominations = denominationService.getCustomDenominationsFromDatabase();
-            Map<Integer, Integer> denominationMap = denominationService.calculateCustomChangeDenominations(change, customDenominations);
-
-            log.info("Change Denominations:");
-
-            if (denominationService.isExactChangeAvailable(change, denominationMap)) {
-                for (Map.Entry<Integer, Integer> entry : denominationMap.entrySet()) {
-                    int denomination = entry.getKey();
-                    int count = entry.getValue();
-
-                    if (count > 0) {
-                        log.info(denomination + " Rupees: " + count + " notes/coins");
-                    }
-                }
-            } else {
-                throw new NoExactChangeException("No exact change available. Please provide the exact amount.");
-            }
-
-            // Update denomination counts in the database
-            denominationService.updateDenominationCounts(denominationMap);
-
-            // Create a new object to populate the initial balance table and the record table
-            InitialBalanceAndPurchaseHistory currentTransaction = new InitialBalanceAndPurchaseHistory(0, inventory.getProductId(), inventory.getName(), inventory.getProductPrice(), inputPrice, change, newInitialBalance);
-
-            // Calling update stock method from the InventoryDAOImplementation class
-            repository.updatedStock(inventory.getProductId(), inventory.getProductInventoryCount() - countOfProduct);
-            initialBalanceDAOImp.saveTransaction(currentTransaction);
-
-            // Return VendingMachineOutputDTO along with denomination map
-            return new VendingMachineOutputDTO(inventory.getName(), inventory.getProductPrice(), change, denominationMap);
-        } else {
-            throw new ProductUnavialableException(inventory.getName() + " is in limited stock. Only " + inventory.getProductInventoryCount() + " left!");
-        }
-    }
-
-//////////////////////////////////////////////////////////
 
 
 //will return individualCost for the product that we opt for purchase
 
 
-    ////////////////////////////////////////working on this remember..................
-    public PurchaseResult multiplePurchaseProduct(final List<PurchaseInputDTO> purchaseInputDTO, int totalCost, Map<Integer, Integer> inputDenominationMap) {
-
+    public PurchaseResult multiplePurchaseProduct(final List<PurchaseInputDTO> purchaseInputDTO, int totalCost, Map<DenominationType, Integer> inputDenominationMap) {
         log.info("product id in purchase product == {} ", totalCost);
-
-        log.info("inSIDE  multiplePurchaseProduct METHOD");
-        var change=0;
+        log.info("inSIDE multiplePurchaseProduct METHOD");
 
         var inputAmount = denominationService.totalDenominationAmount(inputDenominationMap, totalCost);
+        var change = inputAmount >= totalCost ? inputAmount - totalCost : 0;
 
-        if(inputAmount>=totalCost ){
-             change = inputAmount - totalCost;
+        log.info("inSIDE multiplePurchaseProduct METHOD CHANGE VALUE IS ====  {}", change);
+
+        if (change == 0) {
+            throw new InsufficientInputCashException("Total denomination value is less than the total cost of the product you are trying to purchase");
         }
 
-    else
-        {
-            throw new InsufficientInputCashException("total denomination value is less than the total cost of the product you r trying to purchase");
-        }
-        log.info("inSIDE  multiplePurchaseProduct METHOD CHANGE VALUE IS ====  {}",change);
-
-        if (initialBalanceDAOImp.getChange().getInitialBalance() < change) {
-            throw new InsufficientInitialBalanceException("Sorry No Change!!");
+        if (initialBalanceDAOImp.getChange().getVendingMachineBalance() < change) {
+            throw new InsufficientInitialBalanceException("Sorry, no change available!");
         }
 
-        log.info("change amount for the purchase == {} ", change);
+        log.info("Change amount for the purchase == {} ", change);
 
-        var newInitialBalance = initialBalanceDAOImp.getChange().getInitialBalance() - change;
+        var newInitialBalance = initialBalanceDAOImp.getChange().getVendingMachineBalance() - change;
+        log.info("New balance in the vending machine == {}", newInitialBalance);
 
-        log.info("new balance in the vending machine == {}", newInitialBalance);
-
-        // Calculate denominations for the change
         Map<Integer, Integer> customDenominations = denominationService.getCustomDenominationsFromDatabase();
         Map<Integer, Integer> denominationMap = denominationService.calculateCustomChangeDenominations(change, customDenominations);
+
         log.info("Change Denominations:");
 
-        if (denominationService.isExactChangeAvailable(change, denominationMap)) {
-            for (Map.Entry<Integer, Integer> entry : denominationMap.entrySet()) {
-                int denomination = entry.getKey();
-                int count = entry.getValue();
-
-                if (count > 0) {
-                    log.info(denomination + " Rupees: " + count + " notes/coins");
-                }
-            }
-        } else {
+        if (!denominationService.isExactChangeAvailable(change, denominationMap)) {
             throw new NoExactChangeException("No exact change available. Please provide the exact amount.");
         }
 
+        denominationMap.forEach((denomination, count) -> {
+            if (count > 0) {
+                log.info(denomination + " Rupees: " + count + " notes/coins");
+            }
+        });
 
         List<Map<String, Object>> resultList = new ArrayList<>();
+        int transactionId = TransactionIdGenerator.generateTransactionId();
+        StringBuilder productIdsBuilder = new StringBuilder();
 
         for (PurchaseInputDTO purchaseInputDTOList : purchaseInputDTO) {
             var productId = purchaseInputDTOList.getProductId();
             var price = purchaseInputDTOList.getPrice();
-            var countOfProduct = purchaseInputDTOList.getCountOfProduct(); //inventory product count
+            var countOfProduct = purchaseInputDTOList.getCountOfProduct(); // inventory product count
             var quantity = purchaseInputDTOList.getQuantity();
             var name = purchaseInputDTOList.getName();
 
-            InitialBalanceAndPurchaseHistory currentTransaction = new InitialBalanceAndPurchaseHistory(0, productId, name, price, inputAmount, change, newInitialBalance);
+            if (productIdsBuilder.length() > 0) {
+                productIdsBuilder.append(",");
+            }
+            productIdsBuilder.append(productId);
 
             // Calling update stock method from the InventoryDAOImplementation class
             repository.updatedStock(productId, countOfProduct - quantity);
-            initialBalanceDAOImp.saveTransaction(currentTransaction);
 
             // Add the result for each item to the list
             Map<String, Object> result = new HashMap<>();
             result.put("name", name);
             result.put("price", price);
-            result.put("quantity",quantity);
+            result.put("quantity", quantity);
             resultList.add(result);
         }
+
+        InitialBalanceAndPurchaseHistory currentTransaction = new InitialBalanceAndPurchaseHistory(0, transactionId, productIdsBuilder.toString(), inputAmount, change, newInitialBalance);
+        initialBalanceDAOImp.saveTransaction(currentTransaction, inputAmount);
+
         // Update denomination counts in the database
         denominationService.updateDenominationCounts(denominationMap);
 
-        initialBalanceDAOImp.initialBalanceUpdate( inputAmount);
-        // Return a single result containing the change, denomination, and items
         return new PurchaseResult(change, denominationMap, resultList);
-
     }
-
-
 
     //method to calculate the total price of purchased products from the list
     private double calculateTotalPrice(final List<PurchaseInputDTO> purchaseInputDTO) {
@@ -253,15 +175,14 @@ public class InventoryService {
         }
         return totalPrice;
     }
-
-public TotalCostResult processPurchaseRequest(List<Integer> productIds,
+    public TotalCostResult processPurchaseRequest(List<Integer> productIds,
                                              List<Integer> quantities,
                                              List<Integer> prices,
                                              List<Integer> countsOfProduct,
                                              List<String> names) {
-    AtomicInteger totalCost = new AtomicInteger();
+         AtomicInteger totalCost = new AtomicInteger();
 
-    List<PurchaseInputDTO> responseList = IntStream.range(0, quantities.size())
+          List<PurchaseInputDTO> responseList = IntStream.range(0, quantities.size())
             .filter(i -> {
                 Integer quantity = quantities.get(i);
                 return quantity != null && quantity > 0;
@@ -286,7 +207,7 @@ public TotalCostResult processPurchaseRequest(List<Integer> productIds,
             })
             .collect(Collectors.toList());
 
-    return new TotalCostResult(responseList, totalCost.get());
+          return new TotalCostResult(responseList, totalCost.get());
 }
 
 

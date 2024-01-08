@@ -4,39 +4,38 @@ package com.VendingMachine.VendingMachine01.model;
 public class InitialBalanceAndPurchaseHistory {
 
     private int id;
-    private int productId;
-    private String product;
-    private int productPrice;
+
+    private int transactionId;
+    private String productId;
+
     private int customerInputAmount;
+    private int changeAmount;
+
     private int vendingMachineBalance;
 
-    private int initialBalance;
-
-    public InitialBalanceAndPurchaseHistory(int id, int productId, String product, int productPrice, int customerInputAmount, int vendingMachineBalance, int initialBalance) {
+    public InitialBalanceAndPurchaseHistory(int id,int transactionId, String productId, int customerInputAmount, int changeAmount, int vendingMachineBalance) {
         this.id = id;
+        this.transactionId=transactionId;
         this.productId = productId;
-        this.product = product;
-        this.productPrice = productPrice;
         this.customerInputAmount = customerInputAmount;
+        this.changeAmount = changeAmount;
         this.vendingMachineBalance = vendingMachineBalance;
-        this.initialBalance = initialBalance;
     }
+    //////////////////changes for purchase history///////////////
 
     public InitialBalanceAndPurchaseHistory() {
     }
 
-    public int getProductId() {
+    public int getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(int transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    public String getProductId() {
         return productId;
-    }
-
-
-    public String getProduct() {
-        return product;
-    }
-
-
-    public int getProductPrice() {
-        return productPrice;
     }
 
 
@@ -45,8 +44,8 @@ public class InitialBalanceAndPurchaseHistory {
     }
 
 
-    public int getVendingMachineBalance() {
-        return vendingMachineBalance;
+    public int getChangeAmount() {
+        return changeAmount;
     }
 
 
@@ -56,8 +55,8 @@ public class InitialBalanceAndPurchaseHistory {
     }
 
 
-    public int getInitialBalance() {
-        return initialBalance;
+    public int getVendingMachineBalance() {
+        return vendingMachineBalance;
     }
 
     public void setCustomerInputAmount(int customerInputAmount) {
@@ -66,17 +65,12 @@ public class InitialBalanceAndPurchaseHistory {
     public void setId(int id) {
         this.id = id;
     }
-    public void setVendingMachineBalance(int vendingMachineBalance) {this.vendingMachineBalance = vendingMachineBalance;}
-    public void setInitialBalance(int initialBalance) {
-        this.initialBalance = initialBalance;
+    public void setChangeAmount(int changeAmount) {this.changeAmount = changeAmount;}
+    public void setVendingMachineBalance(int vendingMachineBalance) {
+        this.vendingMachineBalance = vendingMachineBalance;
     }
-    public void setProductPrice(int productPrice) {
-        this.productPrice = productPrice;
-    }
-    public void setProduct(String product) {
-        this.product = product;
-    }
-    public void setProductId(int productId) {
+
+    public void setProductId(String productId) {
         this.productId = productId;
     }
 }

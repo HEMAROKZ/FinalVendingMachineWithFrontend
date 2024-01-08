@@ -1,24 +1,25 @@
 package com.VendingMachine.VendingMachine01.controller;
 
+import com.VendingMachine.VendingMachine01.customeexception.CustomIOException;
 import com.VendingMachine.VendingMachine01.dto.*;
+import com.VendingMachine.VendingMachine01.dto.controllerDTO.DenominationType;
 import com.VendingMachine.VendingMachine01.dto.controllerDTO.MultiplePurchaseDTO;
 import com.VendingMachine.VendingMachine01.dto.controllerDTO.MultiplePurchaseInputDTO;
 import com.VendingMachine.VendingMachine01.model.Inventry;
 import com.VendingMachine.VendingMachine01.service.DenominationService;
 import com.VendingMachine.VendingMachine01.service.InventoryService;
+import com.VendingMachine.VendingMachine01.util.DenominationConfig;
 import com.VendingMachine.VendingMachine01.util.FileUtility;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -32,10 +33,13 @@ public class ProductController {
     private final InventoryService inventoryService;
     private final DenominationService denominationService;
 
+    @Value("${bill.relativePath}")
+    private   String relativePath;
     private static final Logger log = LoggerFactory.getLogger(ProductController.class);
     public ProductController(final InventoryService inventoryService, final DenominationService denominationService) {
         this.inventoryService = inventoryService;
         this.denominationService = denominationService;
+
     }
 
     @GetMapping("/home")
@@ -83,28 +87,14 @@ public class ProductController {
         return model;
     }
 
-    @RequestMapping(value = "purchase-Inventryitem", method = RequestMethod.POST)
-    public ModelAndView purchaseUserProduct(@ModelAttribute CustomerInputDTO customerInputDTO) {
-
-        VendingMachineOutputDTO respvariable = inventoryService.purchaseProduct(customerInputDTO);
-        ModelAndView model = new ModelAndView();
-        model.addObject("list", respvariable);
-        model.setViewName("greeting");
-        return model;
-    }
-
     @RequestMapping(value = "/purchasemultipleproductpage", method = RequestMethod.POST)
     public ModelAndView purchaseMultipleUserProducts(@ModelAttribute MultiplePurchaseInputDTO multiplePurchaseInputDTO) {
-        // changed this added method in  inventoryService.processPurchaseRequest to avoid bussiness login in controller
-
+        // changed this added method in  inventoryService.processPurchaseRequest to avoid business login in controller
         log.info("quantity for the purchase == {} ", multiplePurchaseInputDTO.getQuantities());
         log.info("quantity size for the purchase == {} ", multiplePurchaseInputDTO.getQuantities().size());
         TotalCostResult totalCostResult= inventoryService.processPurchaseRequest(multiplePurchaseInputDTO.getProductIds(),multiplePurchaseInputDTO.getQuantities(), multiplePurchaseInputDTO.getPrices(), multiplePurchaseInputDTO.getCountsOfProduct(), multiplePurchaseInputDTO.getNames());
-
-
         List<PurchaseInputDTO> responseList =totalCostResult.getResponseList();
         int totalCost = totalCostResult.getTotalCost();
-
         ModelAndView model = new ModelAndView();
         model.addObject("list", responseList);
         model.addObject("totalCost", totalCost);  // Get the total cost after processing
@@ -113,43 +103,32 @@ public class ProductController {
     }
 
 @RequestMapping(value = "multiplePurchaseOfProductFinal", method = RequestMethod.POST)
-public ModelAndView addMultipledDenominationForProduct(@ModelAttribute MultiplePurchaseDTO multiplePurchaseDTO) {
-    Map<Integer, Integer> denominationMap = new HashMap<>();
-    denominationMap.put(50, multiplePurchaseDTO.getDenomination50());
-    denominationMap.put(20, multiplePurchaseDTO.getDenomination20());
-    denominationMap.put(10, multiplePurchaseDTO.getDenomination10());
-    denominationMap.put(5, multiplePurchaseDTO.getDenomination5());
-    denominationMap.put(2, multiplePurchaseDTO.getDenomination2());
-    denominationMap.put(1, multiplePurchaseDTO.getDenomination1());
+public ModelAndView addMultipledDenominationForProduct(@ModelAttribute MultiplePurchaseDTO multiplePurchaseDTO, @ModelAttribute DenominationConfig denominationConfig) {
+    Map<DenominationType, Integer> denominationMap = denominationConfig.getDenominationValues();
+log.info("denominationMap======================================================"+denominationMap);
 
     List<PurchaseInputDTO> responseList = inventoryService.finalPurchaseRequest(multiplePurchaseDTO.getProductIds(), multiplePurchaseDTO.getQuantities(), multiplePurchaseDTO.getPrices(), multiplePurchaseDTO.getCountsOfProduct(), multiplePurchaseDTO.getNames());
 
     PurchaseResult result = inventoryService.multiplePurchaseProduct(responseList, multiplePurchaseDTO.getTotalCost(), denominationMap);
     denominationService.addUpdateDenominationCounts(denominationMap, multiplePurchaseDTO.getTotalCost());
 
-    // Generate bill content
+    // method to Generate bill content
     String billContent = FileUtility.generateBillContent(result);
-// Specify the relative directory path within the project
-    String relativePath = "src/main/resources/bills/";
-
-// Generate a unique file name based on date and time
+// code to Generate a unique file name based on date and time
     LocalDateTime now = LocalDateTime.now();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     String fileName = "Bill_" + now.format(formatter) + ".txt";
-
-// Save the bill as a text file in the specified relative directory
+// Save the bill as a text file in the specified  directory
     FileUtility.generateBill(relativePath, fileName, billContent);
-
-
     ModelAndView modelAndView = new ModelAndView();
     modelAndView.setViewName("multiplegreeting");
     modelAndView.addObject("result", result);
-    modelAndView.addObject("billFileName", fileName); // Add the file name to the model
+    modelAndView.addObject("billFileName", fileName);
     return modelAndView;
 }
+
 @RequestMapping("/download")
 public void downloadBill(@RequestParam("fileName") String fileName, HttpServletResponse response) {
-    String relativePath = "src/main/resources/bills/";
     String filePath = relativePath+ fileName;
     log.info("file path --------------------->" + filePath);
 
@@ -165,8 +144,8 @@ public void downloadBill(@RequestParam("fileName") String fileName, HttpServletR
             outputStream.write(buffer, 0, bytesRead);
         }
 
-    } catch (IOException e) {
-        e.printStackTrace(); // Handle the exception based on your application's needs
+    } catch (IOException customIOException) {
+        throw new CustomIOException("error occurred while downloading the bill");
     }
 }
 

@@ -18,18 +18,8 @@ public class MultiplePurchaseDTO {
 
     // Constructor to initialize the final fields
     public MultiplePurchaseDTO(
-            int denomination50,
-            int denomination20,
-            int denomination10,
-            int denomination5,
-            int denomination2,
-            int denomination1,
-            List<Integer> productIds,
-            List<Integer> quantities,
-            List<Integer> prices,
-            List<Integer> countsOfProduct,
-            List<String> names,
-            int totalCost) {
+            int denomination50, int denomination20, int denomination10, int denomination5, int denomination2, int denomination1, List<Integer> productIds, List<Integer> quantities,
+            List<Integer> prices, List<Integer> countsOfProduct, List<String> names, int totalCost) {
         this.denomination50 = denomination50;
         this.denomination20 = denomination20;
         this.denomination10 = denomination10;
@@ -43,8 +33,6 @@ public class MultiplePurchaseDTO {
         this.names = names;
         this.totalCost = totalCost;
     }
-
-    // Add getters for all the fields
 
     public int getDenomination50() {
         return denomination50;

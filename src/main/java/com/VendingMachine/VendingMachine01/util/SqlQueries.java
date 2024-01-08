@@ -12,15 +12,15 @@ public class SqlQueries {
     public static final String UPDATE_PRODUCT = "UPDATE productlist SET name = :name, productInventoryCount = :productInventoryCount, productPrice = :productPrice WHERE productId = :productId";
 
     // Initial balance DAO query
-    public static final String SELECT_PURCHASE_HISTORY_BY_ID = "SELECT initialBalance FROM purchasehistory_table WHERE id = :id";
+    public static final String SELECT_PURCHASE_HISTORY_BY_ID = "SELECT vendingMachineBalance FROM purchasehistory_table WHERE id = :id";
 
     public static final String SELECT_ALL_PURCHASE_HISTORY = "SELECT * FROM purchasehistory_table";
 
-    public static final String INSERT_PURCHASE_HISTORY = "INSERT INTO purchasehistory_table (id, productId, product, productPrice, customerInputAmount, vendingMachinebalance, initialBalance)" +
-                    " VALUES (:id, :productId, :product, :productPrice, :customerInputAmount, :vendingMachinebalance, :initialBalance)";
+    public static final String INSERT_PURCHASE_HISTORY = "INSERT INTO purchasehistory_table (id,transactionId, productId,  customerInputAmount, changeAmount, vendingMachineBalance)" +
+            " VALUES (:id,:transactionId ,:productId, :customerInputAmount, :changeAmount, :vendingMachineBalance)";
 
-// denomination DAO query
-public static final String SELECT_DENOMINATION_BY_ID = "SELECT * FROM Denomination WHERE indexId = :indexId";
+    // denomination DAO query
+    public static final String SELECT_DENOMINATION_BY_ID = "SELECT * FROM Denomination WHERE indexId = :indexId";
 
     public static final String UPDATE_DENOMINATION = "UPDATE Denomination SET " +
                     "fiftyRupee = :fiftyRupee, " +

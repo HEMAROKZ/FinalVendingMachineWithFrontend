@@ -69,16 +69,13 @@ public class AdminController {
 
 @PreAuthorize("hasRole('USER')")
 @RequestMapping(value = "add-Inventryitem", method = RequestMethod.POST)
-public ModelAndView saveInventory(@RequestParam("productId") int productId,
-                                  @RequestParam("name") String name,
-                                  @RequestParam("productPrice") int productPrice,
-                                  @RequestParam("productInventoryCount") int productInventoryCount){
-        InventoryDTO inventoryDTO=InventoryDTO.builder()
-                .withProductId(productId)
-                .withName(name)
-                .withProductPrice(productPrice)
-                .withProductInventoryCount(productInventoryCount)
-                .build();
+public ModelAndView saveInventory(@ModelAttribute Inventry inventory){
+    InventoryDTO inventoryDTO=InventoryDTO.builder()
+            .withProductId(inventory.getProductId())
+            .withName(inventory.getName())
+            .withProductPrice(inventory.getProductPrice())
+            .withProductInventoryCount(inventory.getProductInventoryCount())
+            .build();
     adminServices.saveInventory(inventoryDTO);
     List<InventoryDTO> list = inventoryService.getListOfAllInventory();
 

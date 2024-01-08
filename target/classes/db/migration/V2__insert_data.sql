@@ -14,6 +14,6 @@ INSERT INTO Denomination (indexId,fiftyRupee, twentyRupee, tenRupee, fiveRupee,t
 VALUES (1, 20, 30, 30,30,50,100);
 
 INSERT INTO purchasehistory_table
-(productId, product, productPrice, customerInputAmount, vendingMachineBalance, initialBalance)
+(transactionId,productId, customerInputAmount, changeAmount, vendingMachineBalance)
 VALUES
-(000, 'Admin_Update', 0, 0, 0, 2250);
+(0,000, 0, 0, 2250);

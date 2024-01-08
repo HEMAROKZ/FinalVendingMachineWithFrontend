@@ -24,14 +24,11 @@ public class PurchaseInputDTO {
         @JsonIgnore
         private final int price;
 
-    @NotNull
-    @JsonIgnore
-    private final int quantity;
+        @NotNull
+        @JsonIgnore
+        private final int quantity;
 
-//        @JsonCreator
-////        public static PurchaseInputDTO create(@JsonProperty("product_code") int productId, @JsonProperty("giving_amount") int price) {
-////            return builder().withProductId(productId).withPrice(price).build();
-////        }
+
         public PurchaseInputDTO(PurchaseInputBuilder purchaseInputBuilder) {
             this.productId = purchaseInputBuilder.productId;
             this.price = purchaseInputBuilder.price;

@@ -28,7 +28,6 @@ public class InitialBalanceDAOImp implements InitialBalanceDAO {
                 SqlQueries.SELECT_PURCHASE_HISTORY_BY_ID,
                 sqlParameterSource,
                 new BeanPropertyRowMapper<>(InitialBalanceAndPurchaseHistory.class));
-//        return initialBalanceAndPurchaseHistoryList.get(0);
         if (!initialBalanceAndPurchaseHistoryList.isEmpty()) {
             return initialBalanceAndPurchaseHistoryList.get(0);
         } else {
@@ -46,35 +45,19 @@ public class InitialBalanceDAOImp implements InitialBalanceDAO {
     }
 
     @Override
-    public void saveTransaction(final InitialBalanceAndPurchaseHistory initialBalanceAndPurchaseHistory) {
+    public void saveTransaction(final InitialBalanceAndPurchaseHistory initialBalanceAndPurchaseHistory ,final int customerInputAmount) {
+        int initialBalance =( customerInputAmount + getChange().getVendingMachineBalance())-initialBalanceAndPurchaseHistory.getChangeAmount();
+
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource("id", getAllPurchaseHistory().size() + 1)
+                .addValue("transactionId",initialBalanceAndPurchaseHistory.getTransactionId())
                 .addValue("productId", initialBalanceAndPurchaseHistory.getProductId())
-                .addValue("product", initialBalanceAndPurchaseHistory.getProduct())
-                .addValue("productPrice", initialBalanceAndPurchaseHistory.getProductPrice())
                 .addValue("customerInputAmount", initialBalanceAndPurchaseHistory.getCustomerInputAmount())
-                .addValue("vendingMachinebalance", initialBalanceAndPurchaseHistory.getVendingMachineBalance())
-                .addValue("initialBalance", initialBalanceAndPurchaseHistory.getInitialBalance());
+                .addValue("changeAmount", initialBalanceAndPurchaseHistory.getChangeAmount())
+                .addValue("vendingMachineBalance", initialBalance);
 
         namedParameterJdbcTemplate.getJdbcOperations().update("SET IDENTITY_INSERT purchasehistory_table ON");
         namedParameterJdbcTemplate.update(SqlQueries.INSERT_PURCHASE_HISTORY, sqlParameterSource);
         namedParameterJdbcTemplate.getJdbcOperations().update("SET IDENTITY_INSERT purchasehistory_table OFF");
     }
 
-    @Override
-    public void initialBalanceUpdate(final int customerInputAmount) {
-        String product = "update_balance";
-        int initialBalance = customerInputAmount + getChange().getInitialBalance();
-
-        SqlParameterSource sqlParameterSource = new MapSqlParameterSource("id", getAllPurchaseHistory().size() + 1)
-                .addValue("productId", 10001)
-                .addValue("product", product)
-                .addValue("productPrice", 0)
-                .addValue("customerInputAmount", customerInputAmount)
-                .addValue("vendingMachinebalance", 0)
-                .addValue("initialBalance", initialBalance);
-
-        namedParameterJdbcTemplate.getJdbcOperations().update("SET IDENTITY_INSERT purchasehistory_table ON");
-        namedParameterJdbcTemplate.update(SqlQueries.INSERT_PURCHASE_HISTORY, sqlParameterSource);
-        namedParameterJdbcTemplate.getJdbcOperations().update("SET IDENTITY_INSERT purchasehistory_table OFF");
-    }
 }

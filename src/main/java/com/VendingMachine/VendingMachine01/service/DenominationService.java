@@ -3,6 +3,7 @@ package com.VendingMachine.VendingMachine01.service;
 import com.VendingMachine.VendingMachine01.customeexception.InsufficientInputCashException;
 import com.VendingMachine.VendingMachine01.customeexception.NoExactChangeException;
 import com.VendingMachine.VendingMachine01.dao.DenominationDAO;
+import com.VendingMachine.VendingMachine01.dto.controllerDTO.DenominationType;
 import com.VendingMachine.VendingMachine01.model.Denomination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,40 +53,44 @@ public class DenominationService {
         }
     }
 
-    private boolean isDenominationSufficient(final Map<Integer, Integer> denominationMap, final double totalPrice) {
-        double totalDenominationAmount = 0;
+//   ////////////////////////////////////////////////////////////////////////////////////////////////////
+private boolean isDenominationSufficient(final Map<DenominationType, Integer> denominationMap, final double totalPrice) {
+    double totalDenominationAmount = 0;
 
-        for (Map.Entry<Integer, Integer> entry : denominationMap.entrySet()) {
-            int denomination = entry.getKey();
+    for (Map.Entry<DenominationType, Integer> entry : denominationMap.entrySet()) {
+        int denomination = entry.getKey().getValue();
+        int count = entry.getValue();
+        totalDenominationAmount += denomination * count;
+    }
+
+    return totalDenominationAmount >= totalPrice;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+public int totalDenominationAmount(final Map<DenominationType, Integer> denominationMap, final double totalPrice) {
+    int totalDenominationAmount = 0;
+    for (Map.Entry<DenominationType, Integer> entry : denominationMap.entrySet()) {
+        int denomination = entry.getKey().getValue();
+        int count = entry.getValue();
+        totalDenominationAmount += denomination * count;
+    }
+    return totalDenominationAmount;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+public void addUpdateDenominationCounts(final Map<DenominationType, Integer> denominationMap, final double totalPrice) {
+    if (isDenominationSufficient(denominationMap, totalPrice)) {
+        for (Map.Entry<DenominationType, Integer> entry : denominationMap.entrySet()) {
+            int denomination = entry.getKey().getValue();
             int count = entry.getValue();
-            totalDenominationAmount += denomination * count;
+            addUpdateDenominationCounts(count, denomination);
         }
-
-        return totalDenominationAmount >= totalPrice;
+    } else {
+        throw new InsufficientInputCashException("Insufficient denomination amount. Please provide enough denominations.");
     }
-
-    public int totalDenominationAmount(final Map<Integer, Integer> denominationMap, final double totalPrice) {
-        int totalDenominationAmount = 0;
-        for (Map.Entry<Integer, Integer> entry : denominationMap.entrySet()) {
-            int denomination = entry.getKey();
-            int count = entry.getValue();
-            totalDenominationAmount += denomination * count;
-        }
-        return totalDenominationAmount;
-    }
-
-    public void addUpdateDenominationCounts(final Map<Integer, Integer> denominationMap, final double totalPrice) {
-        if (isDenominationSufficient(denominationMap, totalPrice)) {
-            for (Map.Entry<Integer, Integer> entry : denominationMap.entrySet()) {
-                int denomination = entry.getKey();
-                int count = entry.getValue();
-                addUpdateDenominationCounts(count, denomination);
-            }
-        } else {
-            throw new InsufficientInputCashException("Insufficient denomination amount. Please provide enough denominations.");
-        }
-    }
-
+}
+/////////////////////////////////////////////////////////////////////////
     private void addUpdateDenominationCounts(final int count, final int denomination) {
         var optionalDenomination = denominationRepository.findById(1);
         log.info("in addUpdateDenominationCounts METHOD");
@@ -108,7 +113,9 @@ public class DenominationService {
         }
     }
 
-    public Map<Integer, Integer> getCustomDenominationsFromDatabase() {
+    ///////////////////////////////////////////////////////////////////
+
+    public final Map<Integer, Integer> getCustomDenominationsFromDatabase() {
         Optional<Denomination> optionalDenomination = denominationRepository.findById(1);
 
         if (optionalDenomination.isPresent()) {
@@ -128,7 +135,7 @@ public class DenominationService {
         }
     }
 
-    public Map<Integer, Integer> calculateCustomChangeDenominations(final int amount, final Map<Integer, Integer> customDenominations) {
+    public final Map<Integer, Integer> calculateCustomChangeDenominations(final int amount, final Map<Integer, Integer> customDenominations) {
         Map<Integer, Integer> denominationMap = new HashMap<>();
         final int[] remainingAmount = {amount};
 
@@ -149,7 +156,7 @@ public class DenominationService {
         return denominationMap;
     }
 
-    public boolean canFormRemainingAmount(final int remainingAmount, final Map<Integer, Integer> customDenominations) {
+    public final boolean canFormRemainingAmount(final int remainingAmount, final Map<Integer, Integer> customDenominations) {
         for (Map.Entry<Integer, Integer> entry : customDenominations.entrySet()) {
             int denomination = entry.getKey();
             int count = entry.getValue();
@@ -165,7 +172,7 @@ public class DenominationService {
         return false;
     }
 
-    public boolean isExactChangeAvailable(final int change, final Map<Integer, Integer> denominationMap) {
+    public final boolean isExactChangeAvailable(final int change, final Map<Integer, Integer> denominationMap) {
         int totalAvailableChange = denominationMap.entrySet().stream()
                 .mapToInt(entry -> entry.getKey() * entry.getValue())
                 .sum();

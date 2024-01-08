@@ -5,13 +5,9 @@ public class Denomination {
     private int indexId;
     private int fiftyRupee;
     private int twentyRupee;
-
     private int tenRupee;
-
     private int fiveRupee;
-
     private int twoRupee;
-
     private int oneRupee;
 
 

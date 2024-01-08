@@ -54,5 +54,13 @@ public class VendingMachineControllerAdvice {
         return new ResponseEntity<>(vendingMachineException, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(value = {CustomIOException.class})
+    public ResponseEntity<VendingMachineException> CustomIOExceptionHandler(CustomIOException customIOException) {
+
+        VendingMachineException vendingMachineException = new VendingMachineException(
+                customIOException.getMessage(),
+                HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(vendingMachineException, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
 }
