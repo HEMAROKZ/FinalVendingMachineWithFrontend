@@ -46,18 +46,18 @@ public class InitialBalanceDAOImp implements InitialBalanceDAO {
 
     @Override
     public void saveTransaction(final InitialBalanceAndPurchaseHistory initialBalanceAndPurchaseHistory ,final int customerInputAmount) {
-        int initialBalance =( customerInputAmount + getChange().getVendingMachineBalance())-initialBalanceAndPurchaseHistory.getChangeAmount();
+        int initialBalance =( customerInputAmount + getChange().getVendingMachineBalance())-initialBalanceAndPurchaseHistory.getBalanceAmount();
 
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource("id", getAllPurchaseHistory().size() + 1)
-                .addValue("transactionId",initialBalanceAndPurchaseHistory.getTransactionId())
-                .addValue("productId", initialBalanceAndPurchaseHistory.getProductId())
+                .addValue("order_id",initialBalanceAndPurchaseHistory.getOrder_id())
+                .addValue("order_time", initialBalanceAndPurchaseHistory.getOrder_time())
                 .addValue("customerInputAmount", initialBalanceAndPurchaseHistory.getCustomerInputAmount())
-                .addValue("changeAmount", initialBalanceAndPurchaseHistory.getChangeAmount())
+                .addValue("balanceAmount", initialBalanceAndPurchaseHistory.getBalanceAmount())
                 .addValue("vendingMachineBalance", initialBalance);
 
-        namedParameterJdbcTemplate.getJdbcOperations().update("SET IDENTITY_INSERT purchasehistory_table ON");
+        namedParameterJdbcTemplate.getJdbcOperations().update("SET IDENTITY_INSERT orders ON");
         namedParameterJdbcTemplate.update(SqlQueries.INSERT_PURCHASE_HISTORY, sqlParameterSource);
-        namedParameterJdbcTemplate.getJdbcOperations().update("SET IDENTITY_INSERT purchasehistory_table OFF");
+        namedParameterJdbcTemplate.getJdbcOperations().update("SET IDENTITY_INSERT orders OFF");
     }
 
 }

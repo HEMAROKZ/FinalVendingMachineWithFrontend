@@ -2,6 +2,7 @@ package com.VendingMachine.VendingMachine01.service;
 
 import com.VendingMachine.VendingMachine01.customeexception.InsufficientInputCashException;
 import com.VendingMachine.VendingMachine01.customeexception.NoExactChangeException;
+import com.VendingMachine.VendingMachine01.customeexception.ProductUnavialableException;
 import com.VendingMachine.VendingMachine01.dao.DenominationDAO;
 import com.VendingMachine.VendingMachine01.dto.controllerDTO.DenominationType;
 import com.VendingMachine.VendingMachine01.model.Denomination;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -25,115 +27,101 @@ public class DenominationService {
         this.denominationRepository = denominationRepository;
     }
 
-    final void  updateDenominationCounts(Map<Integer, Integer> denominationMap) {
+    final void updateDenominationCounts(Map<Integer, Integer> denominationMap) {
         for (Map.Entry<Integer, Integer> entry : denominationMap.entrySet()) {
-            int denomination = entry.getKey();
+            int denominationValue = entry.getKey();
             int count = entry.getValue();
-            updateDenominationCounts(count, denomination);
-        }
-    }
-
-    private void updateDenominationCounts(final int count, final int denomination) {
-        var optionalDenomination = denominationRepository.findById(1);
-        if (optionalDenomination.isPresent()) {
-            Denomination denominationEntity = optionalDenomination.get();
-            switch (denomination) {
-                case 50 -> denominationEntity.setFiftyRupee(denominationEntity.getFiftyRupee() - count);
-                case 20 -> denominationEntity.setTwentyRupee(denominationEntity.getTwentyRupee() - count);
-                case 10 -> denominationEntity.setTenRupee(denominationEntity.getTenRupee() - count);
-                case 5 -> denominationEntity.setFiveRupee(denominationEntity.getFiveRupee() - count);
-                case 2 -> denominationEntity.setTwoRupee(denominationEntity.getTwoRupee() - count);
-                case 1 -> denominationEntity.setOneRupee(denominationEntity.getOneRupee() - count);
-                default -> throw new IllegalArgumentException("Invalid denomination: " + denomination);
+            DenominationType denominationType = findDenominationTypeByValue(denominationValue);
+            if (denominationType != null) {
+                updateDenominationCounts(count, denominationType);
+            } else {
+                // Handle the case where the denomination type is not found
+                throw new ProductUnavialableException("Denomination type not found for value: " + denominationValue);
             }
-
-            denominationRepository.update(denominationEntity);
-        } else {
-            throw new RuntimeException("Denomination not found for index 1");
         }
     }
 
-//   ////////////////////////////////////////////////////////////////////////////////////////////////////
-private boolean isDenominationSufficient(final Map<DenominationType, Integer> denominationMap, final double totalPrice) {
-    double totalDenominationAmount = 0;
-
-    for (Map.Entry<DenominationType, Integer> entry : denominationMap.entrySet()) {
-        int denomination = entry.getKey().getValue();
-        int count = entry.getValue();
-        totalDenominationAmount += denomination * count;
+    private  DenominationType findDenominationTypeByValue(int value) {
+        for (DenominationType denominationType : DenominationType.values()) {
+            if (denominationType.getValue() == value) {
+                log.info("in findDenominationTypeByValue ->denominationType------->"+denominationType);
+                return denominationType;
+            }
+        }
+        return null;
     }
 
-    return totalDenominationAmount >= totalPrice;
-}
+    private void updateDenominationCounts(final int count, final DenominationType denominationType) {
+        // Fetch the existing denomination from the database
+        Denomination existingDenomination = denominationRepository.getDenominationByDenominationType(denominationType);
+        // Update the count for the existing denomination
+        existingDenomination.setCount(existingDenomination.getCount()-count);
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-public int totalDenominationAmount(final Map<DenominationType, Integer> denominationMap, final double totalPrice) {
-    int totalDenominationAmount = 0;
-    for (Map.Entry<DenominationType, Integer> entry : denominationMap.entrySet()) {
-        int denomination = entry.getKey().getValue();
-        int count = entry.getValue();
-        totalDenominationAmount += denomination * count;
+        // Update the denomination in the database
+        denominationRepository.updateDenomination(existingDenomination);
     }
-    return totalDenominationAmount;
-}
-///////////////////////////////////////////////////////////////////////////////////////////////
 
-public void addUpdateDenominationCounts(final Map<DenominationType, Integer> denominationMap, final double totalPrice) {
-    if (isDenominationSufficient(denominationMap, totalPrice)) {
+    public void addUpdateDenominationCounts(final Map<DenominationType, Integer> denominationMap, final double totalPrice) {
+        if (isDenominationSufficient(denominationMap, totalPrice)) {
+            for (Map.Entry<DenominationType, Integer> entry : denominationMap.entrySet()) {
+                DenominationType denomination = entry.getKey();
+                int count = entry.getValue();
+                addUpdateDenominationCounts(count, denomination);
+            }
+        } else {
+            throw new InsufficientInputCashException("Insufficient denomination amount. Please provide enough denominations.");
+        }
+    }
+    /////////////////////////////////////////////////////////////////////////
+    private void addUpdateDenominationCounts(final int count, final DenominationType denominationType) {
+        Denomination existingDenomination = denominationRepository.getDenominationByDenominationType(denominationType);
+
+        // Update the count for the existing denomination
+        existingDenomination.setCount(existingDenomination.getCount()+count);
+
+        // Update the denomination in the database
+        denominationRepository.updateDenomination(existingDenomination);
+    }
+
+
+    //   ////////////////////////////////////////////////////////////////////////////////////////////////////
+    private boolean isDenominationSufficient(final Map<DenominationType, Integer> denominationMap, final double totalPrice) {
+        double totalDenominationAmount = 0;
+
         for (Map.Entry<DenominationType, Integer> entry : denominationMap.entrySet()) {
             int denomination = entry.getKey().getValue();
             int count = entry.getValue();
-            addUpdateDenominationCounts(count, denomination);
+            totalDenominationAmount += denomination * count;
         }
-    } else {
-        throw new InsufficientInputCashException("Insufficient denomination amount. Please provide enough denominations.");
-    }
-}
-/////////////////////////////////////////////////////////////////////////
-    private void addUpdateDenominationCounts(final int count, final int denomination) {
-        var optionalDenomination = denominationRepository.findById(1);
-        log.info("in addUpdateDenominationCounts METHOD");
 
-        if (optionalDenomination.isPresent()) {
-            Denomination denominationEntity = optionalDenomination.get();
-            switch (denomination) {
-                case 50 -> denominationEntity.setFiftyRupee(denominationEntity.getFiftyRupee() + count);
-                case 20 -> denominationEntity.setTwentyRupee(denominationEntity.getTwentyRupee() + count);
-                case 10 -> denominationEntity.setTenRupee(denominationEntity.getTenRupee() + count);
-                case 5 -> denominationEntity.setFiveRupee(denominationEntity.getFiveRupee() + count);
-                case 2 -> denominationEntity.setTwoRupee(denominationEntity.getTwoRupee() + count);
-                case 1 -> denominationEntity.setOneRupee(denominationEntity.getOneRupee() + count);
-                default -> throw new InsufficientInputCashException("Invalid denomination: " + denomination);
-            }
-
-            denominationRepository.update(denominationEntity);
-        } else {
-            throw new RuntimeException("Denomination not found for index 1");
-        }
+        return totalDenominationAmount >= totalPrice;
     }
 
-    ///////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public int totalDenominationAmount(final Map<DenominationType, Integer> denominationMap, final double totalPrice) {
+        int totalDenominationAmount = 0;
+        for (Map.Entry<DenominationType, Integer> entry : denominationMap.entrySet()) {
+            int denomination = entry.getKey().getValue();
+            int count = entry.getValue();
+            totalDenominationAmount += denomination * count;
+        }
+        return totalDenominationAmount;
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
 
     public final Map<Integer, Integer> getCustomDenominationsFromDatabase() {
-        Optional<Denomination> optionalDenomination = denominationRepository.findById(1);
+        List<Denomination> denominations = denominationRepository.getAllDenominations();
 
-        if (optionalDenomination.isPresent()) {
-            Denomination denomination = optionalDenomination.get();
+        Map<Integer, Integer> customDenominations = new HashMap<>();
 
-            Map<Integer, Integer> customDenominations = new HashMap<>();
-            customDenominations.put(50, denomination.getFiftyRupee());
-            customDenominations.put(20, denomination.getTwentyRupee());
-            customDenominations.put(10, denomination.getTenRupee());
-            customDenominations.put(5, denomination.getFiveRupee());
-            customDenominations.put(2, denomination.getTwoRupee());
-            customDenominations.put(1, denomination.getOneRupee());
-
-            return customDenominations;
-        } else {
-            throw new RuntimeException("Denomination not found for index 1");
+        for (Denomination denomination : denominations) {
+            customDenominations.put(denomination.getDenominationType().getValue(), denomination.getCount());
         }
+        return customDenominations;
     }
+
 
     public final Map<Integer, Integer> calculateCustomChangeDenominations(final int amount, final Map<Integer, Integer> customDenominations) {
         Map<Integer, Integer> denominationMap = new HashMap<>();
@@ -149,7 +137,6 @@ public void addUpdateDenominationCounts(final Map<DenominationType, Integer> den
                 });
 
         if (remainingAmount[0] > 0 && !canFormRemainingAmount(remainingAmount[0], customDenominations)) {
-            log.info("No exact change available. Please provide the exact amount.");
             throw new NoExactChangeException("No exact change available. Please provide the exact amount.");
         }
 
@@ -179,4 +166,5 @@ public void addUpdateDenominationCounts(final Map<DenominationType, Integer> den
 
         return totalAvailableChange == change;
     }
+
 }

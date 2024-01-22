@@ -1,0 +1,17 @@
+Date and Time: 2024-01-22 14:25:59
+
+Total Change: 15.0 Rupees
+
+Denominations:
+5 Rupees: 1 notes/coins
+10 Rupees: 1 notes/coins
+
+Details for Each Product:
+Product Name: dietcoke
+Product Price: 35 Rupees
+Number Of Quantity Purchased: 1
+
+Product Name: coldcoffee
+Product Price: 20 Rupees
+Number Of Quantity Purchased: 1
+

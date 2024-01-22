@@ -10,10 +10,25 @@ VALUES (1, 'dietcoke', 35, 3),
 
 
 
-INSERT INTO Denomination (indexId,fiftyRupee, twentyRupee, tenRupee, fiveRupee,twoRupee,oneRupee)
-VALUES (1, 20, 30, 30,30,50,100);
+-- Inserting denominations data
+INSERT INTO denominations (denominationType, count) VALUES
+  ('FIFTY_RUPEE', 20),
+  ('TWENTY_RUPEE', 30),
+  ('TEN_RUPEE', 30),
+  ('FIVE_RUPEE', 30),
+  ('TWO_RUPEE', 50),
+  ('ONE_RUPEE', 100);
 
-INSERT INTO purchasehistory_table
-(transactionId,productId, customerInputAmount, changeAmount, vendingMachineBalance)
+
+INSERT INTO orders
+(order_id,order_time, customerInputAmount, balanceAmount, vendingMachineBalance)
 VALUES
 (0,000, 0, 0, 2250);
+
+
+
+
+INSERT INTO order_line
+(order_id,line_num, product_id)
+VALUES
+(0,0,0);

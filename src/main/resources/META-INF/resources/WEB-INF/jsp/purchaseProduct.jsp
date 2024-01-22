@@ -106,12 +106,23 @@
             });
         });
     </script>
+    <script>
+               window.addEventListener("beforeunload", function (event) {
+                 // Send an asynchronous request to release the billing counter
+                 var xhr = new XMLHttpRequest();
+                 xhr.open("GET", "/releaseBillingCounter", true);
+                 xhr.send();
+               });
+    </script>
 </head>
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
         <a class="navbar-brand" href="#">Vending Machine Product List For Purchase</a>
     </nav>
+<div class="container text-left">
+   <h4>Assigned Billing Counter: ${billingCounter}</h4>
+ </div>
 
     <fieldset>
         <form action="/purchasemultipleproductpage" method="post">
@@ -132,6 +143,8 @@
                                     <input type="number" name="quantities" value="0" min="0"
                                         max="${product.productInventoryCount}" class="form-control">
                                     <!-- Hidden fields for other details and count -->
+                                       <input type="hidden" name="billingCounter" value="${billingCounter}">
+
                                     <input type="hidden" name="names" value="${product.name}">
                                     <input type="hidden" name="productIds" value="${product.productId}">
                                     <input type="hidden" name="prices" value="${product.productPrice}">

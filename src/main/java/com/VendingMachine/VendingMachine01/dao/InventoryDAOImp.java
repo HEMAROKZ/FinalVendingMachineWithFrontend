@@ -1,7 +1,7 @@
 package com.VendingMachine.VendingMachine01.dao;
 
 import com.VendingMachine.VendingMachine01.dto.InventoryDTO;
-import com.VendingMachine.VendingMachine01.service.InventoryService;
+import com.VendingMachine.VendingMachine01.model.OrderLine;
 import com.VendingMachine.VendingMachine01.util.SqlQueries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +59,7 @@ public class InventoryDAOImp implements InventoryDAO {
 
         int update = getNamedParameterJdbcTemplate().update(SqlQueries.INSERT_PRODUCT, paramSource);
         if(update == 1) {
-            log.info("sucessful update");
+            log.info("successful update");
         }
         return  update;
     }
@@ -71,8 +71,8 @@ public class InventoryDAOImp implements InventoryDAO {
     }
 
     @Override
-    public  int deleteById(final int productId) {
-        return jdbcTemplate.update(SqlQueries.DELETE_PRODUCT_BY_ID, productId);
+    public void deleteById(final int productId) {
+        jdbcTemplate.update(SqlQueries.DELETE_PRODUCT_BY_ID, productId);
     }
 
     @Override
@@ -82,7 +82,21 @@ public class InventoryDAOImp implements InventoryDAO {
                 .addValue("name", e.getName())
                 .addValue("productInventoryCount",e.getProductInventoryCount())
                 .addValue("productPrice", e.getProductPrice());
-        System.out.println("here in inventorydtoimp ========================");
         return  namedParameterJdbcTemplate.update(SqlQueries.UPDATE_PRODUCT, paramSource);
     }
+
+    @Override
+    public  int save_orderDetails(final OrderLine  orderLine) {
+        MapSqlParameterSource paramSource = new MapSqlParameterSource();
+        paramSource.addValue("order_id", orderLine.getOrder_id());
+        paramSource.addValue("line_num", orderLine.getLine_num());
+        paramSource.addValue("product_id",orderLine.getProduct_id());
+
+        int update = getNamedParameterJdbcTemplate().update(SqlQueries.INSERT_ORDER_LINE, paramSource);
+        if(update == 1) {
+            log.info("successful update");
+        }
+        return  update;
+    }
+
 }

@@ -44,10 +44,10 @@ public class AdminServices {
     public InitialBalanceAndPurchaseHistory productToUserProductHistory(final InitialBalanceAndPurchaseHistory inventory) {
         return new InitialBalanceAndPurchaseHistory(
                 inventory.getId(),
-                inventory.getTransactionId(),
-                inventory.getProductId(),
+                inventory.getOrder_id(),
+                inventory.getOrder_time(),
                 inventory.getCustomerInputAmount(),
-                inventory.getChangeAmount(),
+                inventory.getBalanceAmount(),
                 inventory.getVendingMachineBalance()
         );
     }

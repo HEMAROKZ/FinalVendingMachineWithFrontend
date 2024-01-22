@@ -7,11 +7,13 @@ import com.VendingMachine.VendingMachine01.dto.controllerDTO.DenominationType;
 import com.VendingMachine.VendingMachine01.model.InitialBalanceAndPurchaseHistory;
 
 import com.VendingMachine.VendingMachine01.model.Inventry;
+import com.VendingMachine.VendingMachine01.model.OrderLine;
 import com.VendingMachine.VendingMachine01.util.TransactionIdGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +55,6 @@ public class InventoryService {
     }
 
     public InventoryDTO getProductById(int productId) {
-        log.info("product id in get product by id == {} ", productId);
         List<Inventry> product = repository.findById(productId);
         Inventry selectedProduct = product.stream()
                 .findFirst()
@@ -65,10 +66,8 @@ public class InventoryService {
 
         return productToUserProduct(selectedProduct);
     }
-///////////////
 
     public Inventry getInventryProductById(int productId) {
-        log.info("product id in get product by id == {} ", productId);
         if (repository.findById(productId).isEmpty()) {  ///check this  for null pointer exception
             throw new ProductIdNotFoundException("invalid product id given in url ....!!!!");
         } else if (repository.findById(productId).get(0).getProductInventoryCount() < 1) {
@@ -78,7 +77,6 @@ public class InventoryService {
     }
 
     public Inventry getOnlyInventryProductById(int productId) {
-        log.info("product id in get product by id == {} ", productId);
 
         return repository.findById(productId).get(0);
     }
@@ -88,38 +86,31 @@ public class InventoryService {
         return new InventoryDTO(inventory.getProductId(), inventory.getName(), inventory.getProductPrice(), inventory.getProductInventoryCount());
     }
 
-
-
-
 //will return individualCost for the product that we opt for purchase
+    public PurchaseResult multiplePurchaseProduct(final List<PurchaseInputDTO> purchaseInputDTO, int totalCost, Map<DenominationType, Integer> inputDenominationMap,int billingCounter) {
 
-
-    public PurchaseResult multiplePurchaseProduct(final List<PurchaseInputDTO> purchaseInputDTO, int totalCost, Map<DenominationType, Integer> inputDenominationMap) {
-        log.info("product id in purchase product == {} ", totalCost);
-        log.info("inSIDE multiplePurchaseProduct METHOD");
+        var change=0;
 
         var inputAmount = denominationService.totalDenominationAmount(inputDenominationMap, totalCost);
-        var change = inputAmount >= totalCost ? inputAmount - totalCost : 0;
 
-        log.info("inSIDE multiplePurchaseProduct METHOD CHANGE VALUE IS ====  {}", change);
+        if(inputAmount>=totalCost ){
+            change = inputAmount - totalCost;
+        }
 
-        if (change == 0) {
-            throw new InsufficientInputCashException("Total denomination value is less than the total cost of the product you are trying to purchase");
+        else
+        {
+            throw new InsufficientInputCashException("total denomination value is less than the total cost of the product you r trying to purchase");
         }
 
         if (initialBalanceDAOImp.getChange().getVendingMachineBalance() < change) {
-            throw new InsufficientInitialBalanceException("Sorry, no change available!");
+            throw new InsufficientInitialBalanceException("Sorry No Change!!");
         }
 
-        log.info("Change amount for the purchase == {} ", change);
-
         var newInitialBalance = initialBalanceDAOImp.getChange().getVendingMachineBalance() - change;
-        log.info("New balance in the vending machine == {}", newInitialBalance);
 
         Map<Integer, Integer> customDenominations = denominationService.getCustomDenominationsFromDatabase();
-        Map<Integer, Integer> denominationMap = denominationService.calculateCustomChangeDenominations(change, customDenominations);
 
-        log.info("Change Denominations:");
+        Map<Integer, Integer> denominationMap = denominationService.calculateCustomChangeDenominations(change, customDenominations);
 
         if (!denominationService.isExactChangeAvailable(change, denominationMap)) {
             throw new NoExactChangeException("No exact change available. Please provide the exact amount.");
@@ -149,7 +140,6 @@ public class InventoryService {
 
             // Calling update stock method from the InventoryDAOImplementation class
             repository.updatedStock(productId, countOfProduct - quantity);
-
             // Add the result for each item to the list
             Map<String, Object> result = new HashMap<>();
             result.put("name", name);
@@ -158,14 +148,15 @@ public class InventoryService {
             resultList.add(result);
         }
 
-        InitialBalanceAndPurchaseHistory currentTransaction = new InitialBalanceAndPurchaseHistory(0, transactionId, productIdsBuilder.toString(), inputAmount, change, newInitialBalance);
+        InitialBalanceAndPurchaseHistory currentTransaction = new InitialBalanceAndPurchaseHistory(0, transactionId,  LocalDateTime.now(), inputAmount, change, newInitialBalance);
+        OrderLine orderLine=new OrderLine(transactionId,billingCounter, productIdsBuilder.toString());
         initialBalanceDAOImp.saveTransaction(currentTransaction, inputAmount);
-
         // Update denomination counts in the database
-        denominationService.updateDenominationCounts(denominationMap);
-
+        denominationService.updateDenominationCounts(denominationMap); ////////working on this method
+         repository.save_orderDetails(orderLine);
         return new PurchaseResult(change, denominationMap, resultList);
     }
+
 
     //method to calculate the total price of purchased products from the list
     private double calculateTotalPrice(final List<PurchaseInputDTO> purchaseInputDTO) {
@@ -232,9 +223,6 @@ public class InventoryService {
     }
 
     public int productCostCalculation(final PurchaseInputDTO purchaseInputDTOList) {
-
-        // Iterate over the list of PurchaseInputDTO and calculate individual costs
-
         return purchaseInputDTOList.getPrice() * purchaseInputDTOList.getQuantity();
     }
 }

@@ -1,24 +1,26 @@
 package com.VendingMachine.VendingMachine01.model;
 
 
+import java.time.LocalDateTime;
+
 public class InitialBalanceAndPurchaseHistory {
 
     private int id;
 
-    private int transactionId;
-    private String productId;
+    private int order_id;
+    private LocalDateTime order_time;
 
     private int customerInputAmount;
-    private int changeAmount;
+    private int balanceAmount;
 
     private int vendingMachineBalance;
 
-    public InitialBalanceAndPurchaseHistory(int id,int transactionId, String productId, int customerInputAmount, int changeAmount, int vendingMachineBalance) {
+    public InitialBalanceAndPurchaseHistory(int id,int order_id, LocalDateTime order_time, int customerInputAmount, int balanceAmount, int vendingMachineBalance) {
         this.id = id;
-        this.transactionId=transactionId;
-        this.productId = productId;
+        this.order_id=order_id;
+        this.order_time = order_time;
         this.customerInputAmount = customerInputAmount;
-        this.changeAmount = changeAmount;
+        this.balanceAmount = balanceAmount;
         this.vendingMachineBalance = vendingMachineBalance;
     }
     //////////////////changes for purchase history///////////////
@@ -26,16 +28,16 @@ public class InitialBalanceAndPurchaseHistory {
     public InitialBalanceAndPurchaseHistory() {
     }
 
-    public int getTransactionId() {
-        return transactionId;
+    public int getOrder_id() {
+        return order_id;
     }
 
-    public void setTransactionId(int transactionId) {
-        this.transactionId = transactionId;
+    public void setOrder_id(int order_id) {
+        this.order_id = order_id;
     }
 
-    public String getProductId() {
-        return productId;
+    public LocalDateTime getOrder_time() {
+        return order_time;
     }
 
 
@@ -44,8 +46,8 @@ public class InitialBalanceAndPurchaseHistory {
     }
 
 
-    public int getChangeAmount() {
-        return changeAmount;
+    public int getBalanceAmount() {
+        return balanceAmount;
     }
 
 
@@ -65,12 +67,12 @@ public class InitialBalanceAndPurchaseHistory {
     public void setId(int id) {
         this.id = id;
     }
-    public void setChangeAmount(int changeAmount) {this.changeAmount = changeAmount;}
+    public void setBalanceAmount(int balanceAmount) {this.balanceAmount = balanceAmount;}
     public void setVendingMachineBalance(int vendingMachineBalance) {
         this.vendingMachineBalance = vendingMachineBalance;
     }
 
-    public void setProductId(String productId) {
-        this.productId = productId;
+    public void setOrder_time(LocalDateTime order_time) {
+        this.order_time = order_time;
     }
 }

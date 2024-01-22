@@ -127,11 +127,22 @@
             -moz-appearance: textfield;
         }
     </style>
+     <script>
+                   window.addEventListener("beforeunload", function (event) {
+                     // Send an asynchronous request to release the billing counter
+                     var xhr = new XMLHttpRequest();
+                     xhr.open("GET", "/releaseBillingCounter", true);
+                     xhr.send();
+                   });
+        </script>
 </head>
 <body>
     <div class="billing-container">
         <h2>Vending Machine Billing</h2>
                 <a href="/home" class="btn btn-outline-warning">Go Back</a>
+<div class="container text-left">
+   <h4>Assigned Billing Counter: ${billingCounter}</h4>
+ </div>
 
         <form action="multiplePurchaseOfProductFinal" method="post">
            <table>
@@ -158,6 +169,8 @@
                            <input type="hidden" name="names" value="${item.name}">
                            <input type="hidden" name="prices" value="${item.price}">
                            <input type="hidden" name="quantities" value="${item.quantity}">
+                          <input type="hidden" name="billingCounter" value="${billingCounter}">
+
                            <!-- Assuming countsOfProduct is productInventoryCount -->
                            <input type="hidden" name="countsOfProduct" value="${item.countOfProduct}">
                        </tr>

@@ -1,84 +1,56 @@
 package com.VendingMachine.VendingMachine01.model;
 
+import com.VendingMachine.VendingMachine01.dto.controllerDTO.DenominationType;
 
 public class Denomination {
-    private int indexId;
-    private int fiftyRupee;
-    private int twentyRupee;
-    private int tenRupee;
-    private int fiveRupee;
-    private int twoRupee;
-    private int oneRupee;
-
-
-
-    public Denomination(int indexId, int fiftyRupee, int twentyRupee, int tenRupee, int fiveRupee, int twoRupee, int oneRupee) {
-        this.indexId = indexId;
-        this.fiftyRupee = fiftyRupee;
-        this.twentyRupee = twentyRupee;
-        this.tenRupee = tenRupee;
-        this.fiveRupee = fiveRupee;
-        this.twoRupee = twoRupee;
-        this.oneRupee = oneRupee;
-
-    }
+    private int id;
+    private DenominationType denominationType;
+    private int count;
 
     public Denomination() {
     }
 
-    public int getIndexId() {
-        return indexId;
-    }
-    public void setIndexId(int indexId) {
-        this.indexId = indexId;
-    }
-
-
-    public int getFiftyRupee() {
-        return fiftyRupee;
+    public Denomination(int id, DenominationType denominationType, int count) {
+        this.id = id;
+        this.denominationType = denominationType;
+        this.count = count;
     }
 
-    public void setFiftyRupee(int fiftyRupee) {
-        this.fiftyRupee = fiftyRupee;
+    public int getId() {
+        return id;
     }
 
-    public int getTwentyRupee() {
-        return twentyRupee;
+    public DenominationType getDenominationType() {
+        return denominationType;
     }
 
-    public void setTwentyRupee(int twentyRupee) {
-        this.twentyRupee = twentyRupee;
+    public int getCount() {
+        return count;
     }
 
-    public int getTenRupee() {
-        return tenRupee;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setTenRupee(int tenRupee) {
-        this.tenRupee = tenRupee;
+    public void setDenominationType(DenominationType denominationType) {
+        this.denominationType = denominationType;
     }
 
-    public int getFiveRupee() {
-        return fiveRupee;
+    public void setCount(int count) {
+        this.count = count;
     }
 
-    public void setFiveRupee(int fiveRupee) {
-        this.fiveRupee = fiveRupee;
+    public int getDenominationValue() {
+        return denominationType.getValue();
     }
 
-    public int getTwoRupee() {
-        return twoRupee;
-    }
-
-    public void setTwoRupee(int twoRupee) {
-        this.twoRupee = twoRupee;
-    }
-
-    public int getOneRupee() {
-        return oneRupee;
-    }
-
-    public void setOneRupee(int oneRupee) {
-        this.oneRupee = oneRupee;
+    @Override
+    public String toString() {
+        return "Denomination{" +
+                "id=" + id +
+                ", denominationType=" + denominationType.getValue() +
+                ", count=" + count +
+                '}';
     }
 }
+

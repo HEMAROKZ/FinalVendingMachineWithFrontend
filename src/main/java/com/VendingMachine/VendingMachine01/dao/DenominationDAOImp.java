@@ -1,5 +1,6 @@
 package com.VendingMachine.VendingMachine01.dao;
 
+import com.VendingMachine.VendingMachine01.dto.controllerDTO.DenominationType;
 import com.VendingMachine.VendingMachine01.model.Denomination;
 import com.VendingMachine.VendingMachine01.util.SqlQueries;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,30 +26,42 @@ public class DenominationDAOImp implements DenominationDAO {
     public  NamedParameterJdbcTemplate getNamedParameterJdbcTemplate() {
         return namedParameterJdbcTemplate;
     }
+    @Override
+    public List<Denomination> getAllDenominations() {
+        return namedParameterJdbcTemplate.query(
+                SqlQueries.SELECT_ALL_DENOMINATIONS,
+                new BeanPropertyRowMapper<>(Denomination.class)
+        );
+    }
+
+
 
     @Override
-    public  Optional<Denomination> findById(final int indexId) {
-        SqlParameterSource mapSqlParameterSource = new MapSqlParameterSource("indexId", indexId);
-        List<Denomination> result = getNamedParameterJdbcTemplate().query(
-                SqlQueries.SELECT_DENOMINATION_BY_ID,
-                mapSqlParameterSource,
+    public Denomination getDenominationByDenominationType(DenominationType denominationType) {
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource("denominationType", denominationType.toString());
+
+        List<Denomination> denominations = namedParameterJdbcTemplate.query(
+                SqlQueries.SELECT_DENOMINATION_BY_TYPE,
+                sqlParameterSource,
                 new BeanPropertyRowMapper<>(Denomination.class)
         );
 
-        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
+        if (!denominations.isEmpty()) {
+            return denominations.get(0);
+        } else {
+            throw new RuntimeException("Denomination with type " + denominationType + " not found.");
+        }
     }
 
     @Override
-    public  void update(final Denomination denomination) {
-        MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("indexId", denomination.getIndexId());
-        parameters.addValue("fiftyRupee", denomination.getFiftyRupee());
-        parameters.addValue("twentyRupee", denomination.getTwentyRupee());
-        parameters.addValue("tenRupee", denomination.getTenRupee());
-        parameters.addValue("fiveRupee", denomination.getFiveRupee());
-        parameters.addValue("twoRupee", denomination.getTwoRupee());
-        parameters.addValue("oneRupee", denomination.getOneRupee());
+    public void updateDenomination(Denomination denomination) {
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource("id", denomination.getId())
+                .addValue("denominationType", denomination.getDenominationType().toString())
+                .addValue("count", denomination.getCount());
 
-        getNamedParameterJdbcTemplate().update(SqlQueries.UPDATE_DENOMINATION, parameters);
+        namedParameterJdbcTemplate.update(SqlQueries.UPDATE_DENOMINATION, sqlParameterSource);
     }
+
+
 }
+

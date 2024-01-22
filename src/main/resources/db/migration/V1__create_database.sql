@@ -9,23 +9,30 @@ CREATE TABLE productlist (
 );
 
 
-CREATE TABLE Denomination (
-indexId INT  NOT NULL,
-  fiftyRupee INT  NOT NULL,
-  twentyRupee INT NOT NULL,
-  tenRupee INT NOT NULL,
-  fiveRupee INT NOT NULL,
-  twoRupee INT NOT NULL,
-  oneRupee INT NOT NULL,
-  PRIMARY KEY (indexId)
-);
 
-CREATE TABLE purchasehistory_table (
+ CREATE TABLE denominations (
+     id INT IDENTITY ,
+     denominationType VARCHAR(50) NOT NULL,
+     count INT NOT NULL
+     PRIMARY KEY (id)
+ );
+
+
+CREATE TABLE orders (
   id INT IDENTITY(1,1) NOT NULL,
-  transactionId INT NOT NULL,
-  productId VARCHAR(255) NOT NULL,
+  order_id INT NOT NULL,
+  order_time smalldatetime NOT NULL,
   customerInputAmount INT NOT NULL,
-  changeAmount INT NOT NULL,
+  balanceAmount INT NOT NULL,
   vendingMachineBalance INT NOT NULL,
   PRIMARY KEY (id)
+);
+
+
+
+CREATE TABLE order_line (
+  order_id INT  NOT NULL,
+  line_num INT NOT NULL,
+  product_id VARCHAR(50) NOT NULL,
+  PRIMARY KEY (order_id)
 );
