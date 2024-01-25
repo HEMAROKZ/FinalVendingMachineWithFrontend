@@ -26,6 +26,36 @@ public class SqlQueries {
     public static final String SELECT_DENOMINATION_BY_TYPE = "SELECT * FROM denominations WHERE denominationType = :denominationType";
 
     ////////////////////
+    // Insert aggregated rows
+    public static final String INSERT_ORDER_LINE_MERGED = "INSERT INTO order_line_merged (order_id, merged_line_no, merged_product_ids) " +
+            "SELECT " +
+            "    order_id, " +
+            "    MAX(line_num) AS merged_line_no, " +
+            "    STRING_AGG(CAST(product_id AS NVARCHAR(MAX)), ', ') AS merged_product_ids " +
+            "FROM " +
+            "    order_line " +
+            "GROUP BY " +
+            "    order_id;";
+    public static final String DELETE_DUPLICATE = "WITH CTE AS (" +
+            "   SELECT " +
+            "       order_id, " +
+            "       ROW_NUMBER() OVER (PARTITION BY order_id ORDER BY (SELECT NULL)) AS RowNum " +
+            "   FROM " +
+            "       order_line_merged" +
+            ")" +
+            "DELETE FROM CTE WHERE RowNum > 1;";
+    public static final  String DELETE_ZERO_ORDER_LINE = "DELETE FROM order_line WHERE order_id = 0;";
+    public static final String DELETE_ZERO_ORDER = "DELETE FROM orders WHERE order_id = 0;";
+    public static final String DELETE_ZERO_ORDER_MERGE = "DELETE FROM order_line_merged WHERE order_id = 0;";
+    public static final String CREATE_ORDERLINE_MERGE = "IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'order_line_merged') " +
+            "BEGIN " +
+            "    CREATE TABLE [flywaydemo].[dbo].[order_line_merged] (" +
+            "        order_id INT," +
+            "        merged_line_no INT," +
+            "        merged_product_ids NVARCHAR(MAX)" +
+            "    );" +
+            "END;";
+
     private SqlQueries() {
         // Private constructor to prevent instantiation
     }

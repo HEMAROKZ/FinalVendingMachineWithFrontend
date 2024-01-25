@@ -1,11 +1,11 @@
 
 INSERT INTO productlist (productId, name, productPrice, productInventoryCount)
-VALUES (1, 'dietcoke', 35, 3),
-       (2, 'ThumbsUp', 40, 10),
-       (3, 'coldcoffee', 20, 12),
-       (4, 'lays', 10, 20),
-       (5, 'cheetos', 10, 0),
-       (6, 'cocoCola', 40, 15);
+VALUES (456, 'DIET COKE', 35, 32),
+       (238, 'THUMBS UP', 43, 18),
+       (832, 'COLD COFFEE', 37, 12),
+       (645, 'LAYS', 25, 29),
+       (562, 'CHEETOS', 10, 7),
+       (611, 'STRING', 32, 15);
 
 
 

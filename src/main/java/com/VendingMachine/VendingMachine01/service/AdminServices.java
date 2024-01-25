@@ -40,8 +40,8 @@ public class AdminServices {
     public List<InitialBalanceAndPurchaseHistory> allProductToPurchaseHistory(final List<InitialBalanceAndPurchaseHistory> allInvProduct) {
         return allInvProduct.stream().map(this::productToUserProductHistory).collect(Collectors.toList());
     }
-
-    public InitialBalanceAndPurchaseHistory productToUserProductHistory(final InitialBalanceAndPurchaseHistory inventory) {
+//
+    public  InitialBalanceAndPurchaseHistory productToUserProductHistory(final InitialBalanceAndPurchaseHistory inventory) {
         return new InitialBalanceAndPurchaseHistory(
                 inventory.getId(),
                 inventory.getOrder_id(),

@@ -124,19 +124,26 @@ public class InventoryService {
 
         List<Map<String, Object>> resultList = new ArrayList<>();
         int transactionId = TransactionIdGenerator.generateTransactionId();
-        StringBuilder productIdsBuilder = new StringBuilder();
+      //  StringBuilder productIdsBuilder = new StringBuilder();
+        /////////////
+        var line_numberCount=0;
 
+
+        ///////////////
         for (PurchaseInputDTO purchaseInputDTOList : purchaseInputDTO) {
             var productId = purchaseInputDTOList.getProductId();
             var price = purchaseInputDTOList.getPrice();
             var countOfProduct = purchaseInputDTOList.getCountOfProduct(); // inventory product count
             var quantity = purchaseInputDTOList.getQuantity();
             var name = purchaseInputDTOList.getName();
+  var line_number=++line_numberCount;
+//            if (productIdsBuilder.length() > 0) {
+//                productIdsBuilder.append(",");
+//            }
+//            productIdsBuilder.append(productId);
+            OrderLine orderLine=new OrderLine(transactionId,line_number,productId );
+            repository.save_orderDetails(orderLine);
 
-            if (productIdsBuilder.length() > 0) {
-                productIdsBuilder.append(",");
-            }
-            productIdsBuilder.append(productId);
 
             // Calling update stock method from the InventoryDAOImplementation class
             repository.updatedStock(productId, countOfProduct - quantity);
@@ -148,12 +155,21 @@ public class InventoryService {
             resultList.add(result);
         }
 
+        //Create table order_line_merged if it doesn't exist
+       repository. createOrderLineMergedTable();
+
+        // Merge rows in order_line and insert into order_line_merged
+        repository.mergeOrderLineRows();
+
+        //  Delete rows with order_id zero if they exist
+        repository.deleteRowsWithOrderIdZero();
+
         InitialBalanceAndPurchaseHistory currentTransaction = new InitialBalanceAndPurchaseHistory(0, transactionId,  LocalDateTime.now(), inputAmount, change, newInitialBalance);
-        OrderLine orderLine=new OrderLine(transactionId,billingCounter, productIdsBuilder.toString());
+//        OrderLine orderLine=new OrderLine(transactionId,billingCounter, productIdsBuilder);
         initialBalanceDAOImp.saveTransaction(currentTransaction, inputAmount);
         // Update denomination counts in the database
         denominationService.updateDenominationCounts(denominationMap); ////////working on this method
-         repository.save_orderDetails(orderLine);
+//         repository.save_orderDetails(orderLine);
         return new PurchaseResult(change, denominationMap, resultList);
     }
 

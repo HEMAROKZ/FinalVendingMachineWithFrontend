@@ -5,7 +5,7 @@ public class OrderLine {
 
     private int line_num;
 
-    private String product_id;
+    private int product_id;
 
     @Override
     public String toString() {
@@ -19,7 +19,7 @@ public class OrderLine {
     public OrderLine() {
     }
 
-    public OrderLine(int order_id, int line_num, String product_id) {
+    public OrderLine(int order_id, int line_num, int product_id) {
         this.order_id = order_id;
         this.line_num = line_num;
         this.product_id = product_id;
@@ -41,11 +41,11 @@ public class OrderLine {
         this.line_num = line_num;
     }
 
-    public String getProduct_id() {
+    public int getProduct_id() {
         return product_id;
     }
 
-    public void setProduct_id(String product_id) {
+    public void setProduct_id(int product_id) {
         this.product_id = product_id;
     }
 }

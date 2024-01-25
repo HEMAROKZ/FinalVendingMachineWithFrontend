@@ -1,4 +1,4 @@
-Date and Time: 2024-01-22 10:46:54
+Date and Time: 2024-01-25 12:26:43
 
 Total Change: 15.0 Rupees
 
@@ -7,15 +7,15 @@ Denominations:
 10 Rupees: 1 notes/coins
 
 Details for Each Product:
-Product Name: dietcoke
-Product Price: 35 Rupees
+Product Name: THUMBS UP
+Product Price: 43 Rupees
 Number Of Quantity Purchased: 1
 
-Product Name: ThumbsUp
-Product Price: 40 Rupees
+Product Name: LAYS
+Product Price: 25 Rupees
 Number Of Quantity Purchased: 1
 
-Product Name: coldcoffee
-Product Price: 20 Rupees
+Product Name: COLD COFFEE
+Product Price: 37 Rupees
 Number Of Quantity Purchased: 1
 

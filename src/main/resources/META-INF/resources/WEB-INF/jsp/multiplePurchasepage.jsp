@@ -127,14 +127,7 @@
             -moz-appearance: textfield;
         }
     </style>
-     <script>
-                   window.addEventListener("beforeunload", function (event) {
-                     // Send an asynchronous request to release the billing counter
-                     var xhr = new XMLHttpRequest();
-                     xhr.open("GET", "/releaseBillingCounter", true);
-                     xhr.send();
-                   });
-        </script>
+
 </head>
 <body>
     <div class="billing-container">

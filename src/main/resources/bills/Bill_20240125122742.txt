@@ -1,0 +1,24 @@
+Date and Time: 2024-01-25 12:27:42
+
+Total Change: 10.0 Rupees
+
+Denominations:
+10 Rupees: 1 notes/coins
+
+Details for Each Product:
+Product Name: THUMBS UP
+Product Price: 43 Rupees
+Number Of Quantity Purchased: 1
+
+Product Name: CHEETOS
+Product Price: 10 Rupees
+Number Of Quantity Purchased: 1
+
+Product Name: STRING
+Product Price: 32 Rupees
+Number Of Quantity Purchased: 1
+
+Product Name: LAYS
+Product Price: 25 Rupees
+Number Of Quantity Purchased: 1
+

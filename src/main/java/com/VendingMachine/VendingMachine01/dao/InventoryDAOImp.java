@@ -2,7 +2,6 @@ package com.VendingMachine.VendingMachine01.dao;
 
 import com.VendingMachine.VendingMachine01.dto.InventoryDTO;
 import com.VendingMachine.VendingMachine01.model.OrderLine;
-import com.VendingMachine.VendingMachine01.util.SqlQueries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,8 @@ import org.springframework.stereotype.Repository;
 import com.VendingMachine.VendingMachine01.model.Inventry;
 
 import java.util.List;
+
+import static com.VendingMachine.VendingMachine01.util.SqlQueries.*;
 
 @Repository
 public class InventoryDAOImp implements InventoryDAO {
@@ -38,13 +39,13 @@ public class InventoryDAOImp implements InventoryDAO {
 
     @Override
     public  List<Inventry> findAll() {
-        return getNamedParameterJdbcTemplate().query(SqlQueries.SELECT_ALL_PRODUCTS, new BeanPropertyRowMapper<>(Inventry.class));
+        return getNamedParameterJdbcTemplate().query(SELECT_ALL_PRODUCTS, new BeanPropertyRowMapper<>(Inventry.class));
     }
 
     @Override
     public  List<Inventry> findById(final int productId) {
         SqlParameterSource mapSqlParameterSource = new MapSqlParameterSource("productId", productId);
-        return getNamedParameterJdbcTemplate().query(SqlQueries.SELECT_PRODUCT_BY_ID, mapSqlParameterSource, new BeanPropertyRowMapper<>(Inventry.class));
+        return getNamedParameterJdbcTemplate().query(SELECT_PRODUCT_BY_ID, mapSqlParameterSource, new BeanPropertyRowMapper<>(Inventry.class));
     }
 
 
@@ -57,7 +58,7 @@ public class InventoryDAOImp implements InventoryDAO {
         paramSource.addValue("productInventoryCount",e.getProductInventoryCount());
         paramSource.addValue("productPrice", e.getProductPrice());
 
-        int update = getNamedParameterJdbcTemplate().update(SqlQueries.INSERT_PRODUCT, paramSource);
+        int update = getNamedParameterJdbcTemplate().update(INSERT_PRODUCT, paramSource);
         if(update == 1) {
             log.info("successful update");
         }
@@ -72,7 +73,7 @@ public class InventoryDAOImp implements InventoryDAO {
 
     @Override
     public void deleteById(final int productId) {
-        jdbcTemplate.update(SqlQueries.DELETE_PRODUCT_BY_ID, productId);
+        jdbcTemplate.update(DELETE_PRODUCT_BY_ID, productId);
     }
 
     @Override
@@ -82,21 +83,46 @@ public class InventoryDAOImp implements InventoryDAO {
                 .addValue("name", e.getName())
                 .addValue("productInventoryCount",e.getProductInventoryCount())
                 .addValue("productPrice", e.getProductPrice());
-        return  namedParameterJdbcTemplate.update(SqlQueries.UPDATE_PRODUCT, paramSource);
+        return  namedParameterJdbcTemplate.update(UPDATE_PRODUCT, paramSource);
     }
 
     @Override
-    public  int save_orderDetails(final OrderLine  orderLine) {
+    public int save_orderDetails(final OrderLine orderLine) {
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("order_id", orderLine.getOrder_id());
         paramSource.addValue("line_num", orderLine.getLine_num());
-        paramSource.addValue("product_id",orderLine.getProduct_id());
+        paramSource.addValue("product_id", orderLine.getProduct_id());
 
-        int update = getNamedParameterJdbcTemplate().update(SqlQueries.INSERT_ORDER_LINE, paramSource);
-        if(update == 1) {
-            log.info("successful update");
+        // Step 1: Save the order line details
+        int update = getNamedParameterJdbcTemplate().update(INSERT_ORDER_LINE, paramSource);
+
+        if (update == 1) {
+            log.info("Successful update");
         }
-        return  update;
+
+        return update;
+    }
+@Override
+    public void createOrderLineMergedTable() {
+
+        getNamedParameterJdbcTemplate().getJdbcTemplate().execute(CREATE_ORDERLINE_MERGE);
+    }
+    @Override
+    public void mergeOrderLineRows() {
+
+        getNamedParameterJdbcTemplate().getJdbcTemplate().execute(INSERT_ORDER_LINE_MERGED);
+        getNamedParameterJdbcTemplate().getJdbcTemplate().execute(DELETE_DUPLICATE);
+
+}
+
+
+    @Override
+    public void deleteRowsWithOrderIdZero() {
+
+        getNamedParameterJdbcTemplate().getJdbcTemplate().execute(DELETE_ZERO_ORDER_LINE);
+       // getNamedParameterJdbcTemplate().getJdbcTemplate().execute(DELETE_ZERO_ORDER);
+        getNamedParameterJdbcTemplate().getJdbcTemplate().execute(DELETE_ZERO_ORDER_MERGE);
+
     }
 
 }
