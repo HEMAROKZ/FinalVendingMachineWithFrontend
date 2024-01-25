@@ -45,7 +45,6 @@ public class SqlQueries {
             ")" +
             "DELETE FROM CTE WHERE RowNum > 1;";
     public static final  String DELETE_ZERO_ORDER_LINE = "DELETE FROM order_line WHERE order_id = 0;";
-    public static final String DELETE_ZERO_ORDER = "DELETE FROM orders WHERE order_id = 0;";
     public static final String DELETE_ZERO_ORDER_MERGE = "DELETE FROM order_line_merged WHERE order_id = 0;";
     public static final String CREATE_ORDERLINE_MERGE = "IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'order_line_merged') " +
             "BEGIN " +

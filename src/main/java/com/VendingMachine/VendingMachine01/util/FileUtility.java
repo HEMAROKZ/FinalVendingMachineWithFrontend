@@ -24,7 +24,7 @@ public class FileUtility {
     public   final int MAX_BILLING_COUNTERS = 3;
     private static final Logger log = LoggerFactory.getLogger(ProductController.class);
 
-    public static void generateBill(String relativePath, String fileName, String content) {
+    public static  void generateBill(String relativePath, String fileName, String content) {
     String projectPath = System.getProperty("user.dir");
     String filePath = projectPath + "/" + relativePath + "/" + fileName;
 
