@@ -43,11 +43,10 @@ public class InventoryDAOImp implements InventoryDAO {
     }
 
     @Override
-    public  List<Inventry> findById(final int productId) {
+    public List<Inventry> findById(final int productId) {
         SqlParameterSource mapSqlParameterSource = new MapSqlParameterSource("productId", productId);
         return getNamedParameterJdbcTemplate().query(SELECT_PRODUCT_BY_ID, mapSqlParameterSource, new BeanPropertyRowMapper<>(Inventry.class));
     }
-
 
 
     @Override
@@ -73,12 +72,13 @@ public class InventoryDAOImp implements InventoryDAO {
 
     @Override
     public int deleteById(final int productId) {
-        return jdbcTemplate.update(DELETE_PRODUCT_BY_ID, productId);
+
+        return jdbcTemplate.update(DELETE_PRODUCT_BY_ID, productId
+        );
     }
 
     @Override
     public  int update(final Inventry e) {
-        log.warn("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"+e);
         SqlParameterSource paramSource = new MapSqlParameterSource()
                 .addValue("productId", e.getProductId())
                 .addValue("name", e.getName())

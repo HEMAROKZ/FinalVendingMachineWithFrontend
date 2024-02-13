@@ -80,8 +80,12 @@ public class InventoryService {
     }
 
     public Inventry getOnlyInventryProductById(int productId) {
+try {
+    return repository.findById(productId).get(0);
 
-        return repository.findById(productId).get(0);
+}catch (IndexOutOfBoundsException notFound){
+    throw new ProductIdNotFoundException("product id not found "+notFound);
+}
     }
 
     ////////////////////////

@@ -64,6 +64,18 @@ public class DenominationConfig {
         this.denomination1 = denomination1;
     }
 
+    @Override
+    public String toString() {
+        return "DenominationConfig{" +
+                "denomination50=" + denomination50 +
+                ", denomination20=" + denomination20 +
+                ", denomination10=" + denomination10 +
+                ", denomination5=" + denomination5 +
+                ", denomination2=" + denomination2 +
+                ", denomination1=" + denomination1 +
+                '}';
+    }
+
     public Map<DenominationType, Integer> getDenominationValues() {
         // Create a Map from the individual denominations
         Map<DenominationType, Integer> denominationMap = Map.of(
@@ -75,5 +87,7 @@ public class DenominationConfig {
                 DenominationType.ONE_RUPEE, denomination1
         );
         return denominationMap;
+
+
     }
 }

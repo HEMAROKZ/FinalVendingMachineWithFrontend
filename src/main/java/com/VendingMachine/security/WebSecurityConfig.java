@@ -38,6 +38,28 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
 	}
+//
+//	@Override
+//	protected void configure(HttpSecurity httpSecurity) throws Exception {
+//		// We don't need CSRF for this example
+//		httpSecurity.csrf().disable()
+//				.authorizeRequests()
+//				.antMatchers("/authenticate","/login","/home","/product/**"," /Inventoryproduct/**","/purchasemultipleproductpage","/purchase-Inventryitem","/purchaseproductpage"," /purchaseproduct").permitAll() // Allow access to images without authentication
+//				.antMatchers("/getAllInventory","/delete/**", "/addinventoryitem", "/add-Inventryitem", "/update/user/**").authenticated()
+//				.and()
+//				.formLogin()
+//				.loginPage("/login") // Specify the custom login page URL
+//				.defaultSuccessUrl("/getAllInventory")
+//				.failureUrl("/login?error=true")
+//				.permitAll()
+//				.and()
+//				.apply(new JwtConfigurer(jwtRequestFilter));
+////
+////		// Add a fil ter to validate the tokens with every request
+////		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+//	}
+//
+//
 
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
@@ -45,13 +67,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		httpSecurity.csrf().disable()
 				// dont authenticate this particular request
 				.authorizeRequests().antMatchers("/authenticate","/login","/home","/product/**"," /Inventoryproduct/**","/purchasemultipleproductpage","/purchase-Inventryitem","/purchaseproductpage"," /purchaseproduct").permitAll(). // Allow access to images without authentication
-
-
 				// all other requests need to be authenticated
-				anyRequest().authenticated().and().
+						anyRequest().authenticated()
+				.and()
+				.formLogin()
+				.loginPage("/login") // Specify the custom login page URL
+				.defaultSuccessUrl("/getAllInventory")
+				.failureUrl("/login?error=true")
+				.permitAll()
+				.and()
 				// make sure we use stateless session; session won't be used to
 				// store user's state.
-				exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
+				.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
 		// Add a filter to validate the tokens with every request

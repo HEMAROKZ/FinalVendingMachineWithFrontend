@@ -1,4 +1,4 @@
-//package com.VendingMachine.VendingMachine01.security;
+//package com.VendingMachine.security;
 //
 //import org.springframework.beans.factory.annotation.Value;
 //import org.springframework.security.core.userdetails.User;

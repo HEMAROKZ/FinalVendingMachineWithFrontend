@@ -44,6 +44,15 @@ public class VendingMachineControllerAdvice {
         return new ResponseEntity<>(vendingMachineException, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(value = {ProductAlreadyExist.class})
+    public ResponseEntity<VendingMachineException> ProductAlreadyExist(ProductAlreadyExist productAlreadyExist) {
+
+        VendingMachineException vendingMachineException = new VendingMachineException(
+                productAlreadyExist.getMessage(),
+                HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(vendingMachineException, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(value = {InsufficientInputCashException.class})
     public ResponseEntity<VendingMachineException> InsufficientChangeExceptionHandler(InsufficientInputCashException insufficientInputCashException) {
 

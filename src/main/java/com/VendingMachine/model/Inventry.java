@@ -29,7 +29,7 @@ public  class Inventry  {
     public String toString() {
         return "Inventry{" +
                 "productId=" + productId +
-                ", name='" + name + '\'' +
+                ", name='" + name +
                 ", productPrice=" + productPrice +
                 ", productInventoryCount=" + productInventoryCount +
                 '}';

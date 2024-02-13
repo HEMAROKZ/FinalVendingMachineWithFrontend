@@ -1,5 +1,6 @@
-//package com.VendingMachine.VendingMachine01.security;
+//package com.VendingMachine.security;
 //
+//import com.VendingMachine.security.CustomUserDetailsService;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,10 @@
 //
 //    @Autowired
 //    private CustomUserDetailsService userDetailsService;
+//
+////    @Autowired
+////    private JwtTokenUtil jwtTokenProvider;
+//
 //
 //    @Bean
 //    public BCryptPasswordEncoder passwordEncoder() {
@@ -48,24 +53,6 @@
 //                .and()
 //                .csrf().disable();
 //    }
-////    @Override
-////    protected void configure(HttpSecurity http) throws Exception {
-////        http
-////                .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-////                .authorizeRequests()
-////                .anyRequest().authenticated()
-////                .and()
-////                .formLogin()
-////                .loginPage("/login")
-////                .defaultSuccessUrl("/home")
-////                .failureUrl("/login?error=true")
-////                .permitAll()
-////                .and()
-////                .logout()
-////                .logoutSuccessUrl("/home")
-////                .permitAll()
-////                .and()
-////                .csrf().disable();
-////    }
+//
 //
 //}

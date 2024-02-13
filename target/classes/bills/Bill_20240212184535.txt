@@ -1,0 +1,16 @@
+Date and Time: 2024-02-12 18:45:35
+
+Total Change: 2.0 Rupees
+
+Denominations:
+2 Rupees: 1 notes/coins
+
+Details for Each Product:
+Product Name: gu juice
+Product Price: 98 Rupees
+Number Of Quantity Purchased: 1
+
+Product Name: DIET COKE
+Product Price: 35 Rupees
+Number Of Quantity Purchased: 2
+

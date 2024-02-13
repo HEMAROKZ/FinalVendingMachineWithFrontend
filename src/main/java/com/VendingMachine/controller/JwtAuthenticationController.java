@@ -1,7 +1,12 @@
 package com.VendingMachine.controller;
 
+import java.util.List;
 import java.util.Objects;
 
+import com.VendingMachine.dto.InventoryDTO;
+import com.VendingMachine.model.JwtResponse;
+import com.VendingMachine.security.JwtTokenUtil;
+import com.VendingMachine.service.InventoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +18,14 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.VendingMachine.security.JwtTokenUtil;
+//import com.VendingMachine.security.JwtTokenUtil;
 import com.VendingMachine.model.JwtRequest;
-import com.VendingMachine.model.JwtResponse;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @CrossOrigin
@@ -29,6 +33,7 @@ public class JwtAuthenticationController {
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
+	private final InventoryService inventoryService;
 
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
@@ -37,25 +42,35 @@ public class JwtAuthenticationController {
 	@Autowired
 	private UserDetailsService jwtInMemoryUserDetailsService;
 
-@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
-public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest)
-		throws Exception {
-log.info("authenticationRequest crediantials "+authenticationRequest.getUsername()+" & "+authenticationRequest.getPassword());
-	authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
-
-	final UserDetails userDetails = jwtInMemoryUserDetailsService
-			.loadUserByUsername(authenticationRequest.getUsername());
-
-	final String token = jwtTokenUtil.generateToken(userDetails);
-
-	// Include the token in the response headers
-	HttpHeaders responseHeaders = new HttpHeaders();
-	responseHeaders.set("Authorization", "Bearer " + token);
-	// Return the token in the response body and headers
-	return ResponseEntity.ok()
-			.headers(responseHeaders)
-			.body(new JwtResponse(token));
-}
+	public JwtAuthenticationController(InventoryService inventoryService) {
+		this.inventoryService = inventoryService;
+	}
+//
+//	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
+//public ModelAndView createAuthenticationToken(@RequestParam String username, @RequestParam String password, HttpServletResponse response)
+//		throws Exception {
+//log.info("authenticationRequest crediantials "+username+" & "+password);
+//	authenticate(username, password);
+//
+//	final UserDetails userDetails = jwtInMemoryUserDetailsService
+//			.loadUserByUsername(username);
+//
+//	final String token = jwtTokenUtil.generateToken(userDetails);
+//log.info("inside authenticationRequest controller and token generated TOKEN== "+token);
+//	// Include the token in the response headers
+//	HttpHeaders responseHeaders = new HttpHeaders();
+//	responseHeaders.set("Authorization", "Bearer " + token);
+//	Cookie cookie = new Cookie("JWT-TOKEN", token);
+//        cookie.setHttpOnly(true);
+//        response.addCookie(cookie);
+//	List<InventoryDTO> list = inventoryService.getListOfAllInventory();
+//
+//	ModelAndView model = new ModelAndView();
+//	model.addObject("list", list);
+//	model.setViewName("getInventoryList");
+//	// Return the token in the response body and headers
+//	return model;
+//}
 
 	private void authenticate(String username, String password) throws Exception {
 		Objects.requireNonNull(username);
@@ -68,5 +83,29 @@ log.info("authenticationRequest crediantials "+authenticationRequest.getUsername
 		} catch (BadCredentialsException e) {
 			throw new Exception("INVALID_CREDENTIALS", e);
 		}
+	}
+
+
+	//////////////////////////////////correct working one above createAuthenticationToken method is changed for testing
+
+	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
+	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest, HttpServletResponse response)
+			throws Exception {
+		log.info("authenticationRequest crediantials "+authenticationRequest.getUsername()+" & "+authenticationRequest.getPassword());
+		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+
+		final UserDetails userDetails = jwtInMemoryUserDetailsService
+				.loadUserByUsername(authenticationRequest.getUsername());
+
+		final String token = jwtTokenUtil.generateToken(userDetails);
+		log.info("inside authenticationRequest controller and token generated TOKEN== "+token);
+		// Include the token in the response headers
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.set("Authorization", "Bearer " + token);
+
+		// Return the token in the response body and headers
+		return ResponseEntity.ok()
+				.headers(responseHeaders)
+				.body(new JwtResponse(token));
 	}
 }

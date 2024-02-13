@@ -1,0 +1,16 @@
+Date and Time: 2024-02-13 09:52:48
+
+Total Change: 20.0 Rupees
+
+Denominations:
+20 Rupees: 1 notes/coins
+
+Details for Each Product:
+Product Name: ThumbsUp
+Product Price: 40 Rupees
+Number Of Quantity Purchased: 1
+
+Product Name: lays
+Product Price: 10 Rupees
+Number Of Quantity Purchased: 1
+

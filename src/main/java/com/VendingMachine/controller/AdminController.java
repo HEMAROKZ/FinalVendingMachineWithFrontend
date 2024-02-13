@@ -6,12 +6,17 @@ import com.VendingMachine.service.AdminServices;
 import com.VendingMachine.service.InventoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+//import com.VendingMachine.security.JwtTokenUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
@@ -22,14 +27,34 @@ public class    AdminController {
     private final AdminServices adminServices;
     private final InventoryService inventoryService;
 
+  //  private final JwtTokenUtil jwtTokenUtil;
+
     private static final Logger log = LoggerFactory.getLogger(InventoryService.class);
 
 
-    public AdminController(final AdminServices adminServices, final InventoryService inventoryService) {
+    public AdminController(final AdminServices adminServices, final InventoryService inventoryService ) {//JwtTokenUtil jwtTokenUtil
         this.adminServices = adminServices;
         this.inventoryService = inventoryService;
+       // this.jwtTokenUtil = jwtTokenUtil;
     }
 
+//
+//    @PostMapping("/perform_login")
+//    public ModelAndView performLogin(@RequestParam String username, @RequestParam String password, HttpServletResponse response) {
+//        // Authenticate the user
+//        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+//
+//        // Generate JWT token
+//        String jwtToken = jwtTokenUtil.generateToken(authentication);
+//
+//        // Set the token in a cookie
+//        Cookie cookie = new Cookie("JWT-TOKEN", jwtToken);
+//        cookie.setHttpOnly(true);
+//        response.addCookie(cookie);
+//
+//        // Redirect to a secured page
+//        return new ModelAndView("redirect:/secured-page");
+//    }
     @GetMapping("/login")
     public ModelAndView login() {
         ModelAndView modelAndView = new ModelAndView("login");
