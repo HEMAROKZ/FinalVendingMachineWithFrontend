@@ -1,4 +1,4 @@
-VENDING MACHINE SPRING BOOT APPLICATION .
+# VENDING MACHINE SPRING BOOT APPLICATION .
 
 * Developed an application to simulate an functanility of an vending machine where user will be able to purchase the product and admin with authentication crediantials      will be able to do CRUD operation .
 * this application has two process Admin process and customer process,in admin process endpoints,  admin functionality has been inculded which is protected by authentication and customer process endpoints is  open to access as it contains purchase product logic .
@@ -9,7 +9,7 @@ VENDING MACHINE SPRING BOOT APPLICATION .
 * Added an Billing Counter using session where  three counter will be active for user ,when ever user is allocated one counter it will not be avialiable for other user .
 * this application acts as an server application form which other application consume this rest endpoints using Resttemplate .
 
-DENOMINATION 
+## DENOMINATION 
 
 * Added denomination to simulate user try to purchase the product with several different denominations .
 * Current Denominations are 50,20,10,5,2,1.
