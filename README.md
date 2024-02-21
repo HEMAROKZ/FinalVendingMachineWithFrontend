@@ -15,18 +15,18 @@
 * Current Denominations are 50,20,10,5,2,1.
 * Denomintion count has been stored in the database ,count of the denomination used will be updated after every sucessful purchase of the product.
 
-DATABASE CONNECTIVITY
+## DATABASE CONNECTIVITY
 
 * Used MS-SQL for database and spring JDBC for connectivity and added custom query in DAO to fetch and manupliate data from database using namedParameterJdbcTemplate .
 * Also used Flyway as a database migration tool.
 * Tables in database present are  product table,pruchase history table,denomination table and order line table .
 
-SECURITY
+## SECURITY
 
 * For the Rest controller ,the endpoints has been protected by JWT token,where token has to be passed in header to be authenticated to access the endpoints .
 * for the controller with modelandview resolver admin process end points has to be authenticated with crediantials in an  custom login page to be access and perform CRUD operations.
 
-BILL GENERATION
+## BILL GENERATION
 
 * added bill generation which will generate a bill after every sucessfull trancation in the below format and also added download button in front end to download the below details in txt file. 
 
